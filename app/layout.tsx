@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     siteName: "CreatorAI",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "CreatorAI - Supercharge your content workflow",
@@ -57,15 +57,15 @@ export const metadata: Metadata = {
     title: "CreatorAI | AI-Powered Content Creation",
     description:
       "Supercharge your content creation workflow with AI-powered tools and templates",
-    images: ["/twitter-image.png"],
+    images: ["/og-image.jpg"],
     creator: "@dineshchhantyal",
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/favicon.ico", sizes: "any" },
+      { url: "/logo.svg", type: "image/svg+xml" },
     ],
-    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+    apple: { url: "/icons/apple-touch-icon.png", sizes: "180x180" },
     shortcut: "/favicon-16x16.png",
   },
   manifest: "/site.webmanifest",
