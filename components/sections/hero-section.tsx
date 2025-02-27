@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -9,11 +8,11 @@ import { siteConfig } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Play, Sparkles, Video } from "lucide-react";
+import { HeroAnimation } from "@/components/sections/hero-animation";
 
 export function HeroSection() {
   const router = useRouter();
   const [videoUrl, setVideoUrl] = useState("");
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +86,7 @@ export function HeroSection() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Paste YouTube URL..."
+                  placeholder="Paste YouTube or TikTok URL..."
                   className="pl-10 h-12 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
@@ -119,48 +118,18 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* Hero Visual */}
+          {/* Hero Visual - Using our new animation component */}
           <div className="flex-1 hidden lg:block">
             <motion.div
-              className="relative"
+              className="relative aspect-video max-w-xl mx-auto"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, duration: 0.5 }}
             >
               <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-fuchsia-500 rounded-2xl blur-sm opacity-30 dark:opacity-40" />
-              <div
-                className="relative bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                <div className="h-8 w-full bg-gray-100 dark:bg-gray-900 flex items-center px-4 border-b border-gray-200 dark:border-gray-800">
-                  <div className="flex space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
-                  </div>
-                </div>
-                <div className="relative">
-                  <Image
-                    src="/dashboard-preview.png"
-                    width={600}
-                    height={400}
-                    alt="CreatorAI Dashboard Preview"
-                    className="w-full object-cover"
-                    priority
-                  />
-                  {isHovered && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 transition-opacity">
-                      <Button
-                        size="lg"
-                        className="flex items-center gap-2 bg-white text-black hover:bg-gray-100"
-                        variant="secondary"
-                      >
-                        <Play size={18} fill="currentColor" /> Watch Demo
-                      </Button>
-                    </div>
-                  )}
-                </div>
+
+              <div className="relative rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden h-full">
+                <HeroAnimation />
               </div>
             </motion.div>
           </div>

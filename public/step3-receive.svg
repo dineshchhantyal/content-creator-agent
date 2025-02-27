@@ -1,0 +1,27 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Document with stats -->
+    <rect x="50" y="40" width="100" height="120" rx="4" fill="white" stroke="#9333EA" stroke-width="2" />
+
+    <!-- Header -->
+    <rect x="60" y="50" width="80" height="10" rx="2" fill="#F3E8FF" />
+
+    <!-- Stats Bar Chart -->
+    <rect x="60" y="70" width="10" height="40" rx="2" fill="#9333EA" />
+    <rect x="80" y="80" width="10" height="30" rx="2" fill="#9333EA" opacity="0.8" />
+    <rect x="100" y="65" width="10" height="45" rx="2" fill="#9333EA" />
+    <rect x="120" y="75" width="10" height="35" rx="2" fill="#9333EA" opacity="0.7" />
+
+    <!-- Text lines -->
+    <rect x="60" y="120" width="80" height="4" rx="2" fill="#F3E8FF" />
+    <rect x="60" y="130" width="60" height="4" rx="2" fill="#F3E8FF" />
+    <rect x="60" y="140" width="70" height="4" rx="2" fill="#F3E8FF" />
+
+    <!-- Lightning bolt overlay -->
+    <path d="M 125 90 L 110 115 L 120 118 L 95 150 L 105 125 L 95 122 L 110 95 Z" fill="#9333EA" opacity="0.7" />
+
+    <!-- Sparkling points -->
+    <circle cx="130" cy="55" r="2" fill="#9333EA" />
+    <circle cx="135" cy="65" r="1" fill="#9333EA" />
+    <circle cx="140" cy="75" r="2" fill="#9333EA" />
+    <circle cx="135" cy="85" r="1" fill="#9333EA" />
+</svg>

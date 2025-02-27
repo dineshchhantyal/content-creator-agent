@@ -11,6 +11,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SchematicProvider } from "@schematichq/schematic-react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,27 +33,37 @@ export default function ClientWrapper({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const schematicPublishableKey =
+    process.env.NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY;
+
+  if (!schematicPublishableKey) {
+    throw new Error(
+      "Please provide your Schematic Publishable Key in the NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY environment variable."
+    );
+  }
   return (
     <ClerkProvider>
-      <ThemeProvider defaultTheme="system">
-        <html lang="en">
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <header className="flex justify-end items-center p-4 gap-4 h-16">
-              <SignedOut>
-                <SignInButton />
-                <SignUpButton />
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-              <ThemeToggle />
-            </header>
-            {children}
-          </body>
-        </html>
-      </ThemeProvider>
+      <SchematicProvider publishableKey="YOUR_PROJECT_ID">
+        <ThemeProvider defaultTheme="system">
+          <html lang="en">
+            <body
+              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+              <header className="flex justify-end items-center p-4 gap-4 h-16">
+                <SignedOut>
+                  <SignInButton />
+                  <SignUpButton />
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+                <ThemeToggle />
+              </header>
+              {children}
+            </body>
+          </html>
+        </ThemeProvider>
+      </SchematicProvider>
     </ClerkProvider>
   );
 }

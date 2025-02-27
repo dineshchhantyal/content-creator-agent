@@ -4,7 +4,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { ThemeScript } from "@/components/theme-script";
+import { siteConfig } from "@/lib/constants";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Content Creator Agent",
-  description: "Your AI-powered content creation assistant",
+  title: siteConfig.name,
+  description: siteConfig.description,
 };
 
 export default function RootLayout({
@@ -33,11 +35,12 @@ export default function RootLayout({
           <ThemeScript />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 flex flex-col min-h-screen`}
         >
           <ThemeProvider defaultTheme="system">
             <Header />
-            <main>{children}</main>
+            <main className="flex-1">{children}</main>
+            <Footer />
           </ThemeProvider>
         </body>
       </html>

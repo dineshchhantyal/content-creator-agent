@@ -1,0 +1,36 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Brain outline -->
+    <path
+        d="M100 30C65 30 50 55 50 80C50 105 65 125 75 135C85 145 95 150 100 150C105 150 115 145 125 135C135 125 150 105 150 80C150 55 135 30 100 30Z"
+        fill="#F3E8FF" stroke="#9333EA" stroke-width="2" />
+
+    <!-- Brain details -->
+    <path d="M75 60C85 50 115 50 125 60" stroke="#9333EA" stroke-width="2" />
+    <path d="M65 80C80 70 120 70 135 80" stroke="#9333EA" stroke-width="2" />
+    <path d="M65 100C80 90 120 90 135 100" stroke="#9333EA" stroke-width="2" />
+    <path d="M75 120C85 110 115 110 125 120" stroke="#9333EA" stroke-width="2" />
+
+    <!-- Circuit lines -->
+    <path d="M60 70L40 70M60 90L35 90M60 110L40 110M140 70L160 70M140 90L165 90M140 110L160 110" stroke="#9333EA"
+        stroke-width="1.5" stroke-dasharray="2 2" />
+
+    <!-- Scanning effect -->
+    <rect x="40" y="60" width="120" height="80" fill="url(#scanGradient)" opacity="0.3" />
+    <defs>
+        <linearGradient id="scanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#9333EA" stop-opacity="0" />
+            <stop offset="50%" stop-color="#9333EA" stop-opacity="0.5" />
+            <stop offset="100%" stop-color="#9333EA" stop-opacity="0" />
+        </linearGradient>
+    </defs>
+
+    <!-- Analysis data points -->
+    <circle cx="70" cy="75" r="3" fill="#9333EA" />
+    <circle cx="90" cy="65" r="3" fill="#9333EA" />
+    <circle cx="110" cy="85" r="3" fill="#9333EA" />
+    <circle cx="130" cy="70" r="3" fill="#9333EA" />
+    <circle cx="75" cy="105" r="3" fill="#9333EA" />
+    <circle cx="95" cy="115" r="3" fill="#9333EA" />
+    <circle cx="115" cy="100" r="3" fill="#9333EA" />
+    <circle cx="125" cy="120" r="3" fill="#9333EA" />
+</svg>
