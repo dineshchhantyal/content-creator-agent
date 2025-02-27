@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { siteConfig } from "@/lib/constants";
+import { paths, siteConfig } from "@/lib/constants";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -8,29 +8,22 @@ export function Footer() {
     <footer className="w-full border-t border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div
-              className={`relative h-7 w-7 overflow-hidden rounded-md bg-gradient-to-br from-${siteConfig.colors.gradient.from} via-${siteConfig.colors.gradient.via} to-${siteConfig.colors.gradient.to} flex items-center justify-center`}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="white"
-                className="w-4 h-4"
-              >
-                <path d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-6a2.25 2.25 0 00-2.25 2.25v6" />
-              </svg>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-50"></div>
-            </div>
-            <span
-              className={`font-medium bg-clip-text text-transparent bg-gradient-to-r from-${siteConfig.colors.gradient.from} to-${siteConfig.colors.gradient.to}`}
-            >
-              {siteConfig.logo.text.main}
-              <span className="text-foreground">
-                {siteConfig.logo.text.accent}
+          <Link href={paths.home} className="flex items-center gap-3 group">
+            {/* Your logo SVG */}
+            <div className="hidden sm:block">
+              <span className="font-bold text-lg tracking-tight flex items-center">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-fuchsia-500 to-fuchsia-400 [text-shadow:0_2px_12px_rgba(147,51,234,0.15)] font-extrabold transition-all duration-300 group-hover:[text-shadow:0_2px_16px_rgba(147,51,234,0.3)]">
+                  {siteConfig.logo.text.main}
+                </span>
+                <span className="ml-[0.2em] text-foreground font-medium">
+                  {siteConfig.logo.text.accent}
+                </span>
               </span>
-            </span>
-          </div>
+              <p className="text-[10px] text-gray-600 dark:text-gray-400 -mt-1">
+                {siteConfig.logo.tagline}
+              </p>
+            </div>
+          </Link>
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-400">
             <p>

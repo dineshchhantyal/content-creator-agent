@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   SignInButton,
   SignUpButton,
@@ -32,12 +33,37 @@ import {
 import { Button } from "@/components/ui/button";
 
 export function Header() {
+  const [scrolled, setScrolled] = useState(false);
+
+  // Add scroll event listener
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Check initial scroll position
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [scrolled]);
+
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-30 w-full border-b transition-all duration-300 ${
+        scrolled
+          ? "border-gray-200/50 dark:border-gray-800/50 bg-white/70 dark:bg-gray-950/80 backdrop-blur-lg backdrop-saturate-150"
+          : "border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md"
+      }`}
+    >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <Link href={paths.home} className="flex items-center gap-3">
+          <Link href={paths.home} className="flex items-center gap-3 group">
             <div
               className={`relative h-9 w-9 overflow-hidden rounded-md bg-gradient-to-br from-${siteConfig.colors.gradient.from} via-${siteConfig.colors.gradient.via} to-${siteConfig.colors.gradient.to} flex items-center justify-center shadow-[0_0_15px_${siteConfig.colors.shadow}]`}
             >
@@ -73,11 +99,11 @@ export function Header() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-50"></div>
             </div>
             <div className="hidden sm:block">
-              <span
-                className={`font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-${siteConfig.colors.gradient.from} to-${siteConfig.colors.gradient.to}`}
-              >
-                {siteConfig.logo.text.main}
-                <span className="text-foreground">
+              <span className="font-bold text-lg tracking-tight flex items-center">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-fuchsia-500 to-fuchsia-400 [text-shadow:0_2px_12px_rgba(147,51,234,0.15)] font-extrabold transition-all duration-300 group-hover:[text-shadow:0_2px_16px_rgba(147,51,234,0.3)]">
+                  {siteConfig.logo.text.main}
+                </span>
+                <span className="ml-[0.2em] text-foreground font-medium">
                   {siteConfig.logo.text.accent}
                 </span>
               </span>
