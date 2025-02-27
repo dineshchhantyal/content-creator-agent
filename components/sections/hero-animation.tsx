@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { siteConfig } from "@/lib/constants";
 import {
@@ -10,6 +10,7 @@ import {
   LineChart,
   PenSquare,
   Sparkles,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +18,21 @@ export function HeroAnimation() {
   const [animationStep, setAnimationStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
+  const animationRef = useRef(null);
+
+  // Auto-play the animation when component mounts
+  useEffect(() => {
+    // Small delay before auto-playing to ensure component is fully rendered
+    const autoPlayTimer = setTimeout(() => {
+      if (!hasAutoPlayed) {
+        startAnimation();
+        setHasAutoPlayed(true);
+      }
+    }, 1000);
+
+    return () => clearTimeout(autoPlayTimer);
+  }, [hasAutoPlayed]);
 
   // Auto-advance animation or reset when completed
   useEffect(() => {
@@ -29,13 +45,42 @@ export function HeroAnimation() {
           const resetTimer = setTimeout(() => {
             setAnimationStep(0);
             setIsPlaying(false);
-          }, 2000);
+          }, 3000); // Slightly longer delay at the end
           return () => clearTimeout(resetTimer);
         }
       }, 2200);
       return () => clearTimeout(timer);
     }
   }, [animationStep, isPlaying]);
+
+  // Check if animation is in viewport to optimize resources
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // If animation isn't playing and we're back in viewport, consider restarting
+        if (
+          entry.isIntersecting &&
+          !isPlaying &&
+          animationStep === 0 &&
+          hasAutoPlayed
+        ) {
+          // Optional: Auto-restart when scrolling back into view
+          // startAnimation();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (animationRef.current) {
+      observer.observe(animationRef.current);
+    }
+
+    return () => {
+      if (animationRef.current) {
+        observer.unobserve(animationRef.current);
+      }
+    };
+  }, [isPlaying, animationStep, hasAutoPlayed]);
 
   const startAnimation = () => {
     setAnimationStep(0);
@@ -70,6 +115,7 @@ export function HeroAnimation() {
 
   return (
     <div
+      ref={animationRef}
       className="relative w-full h-full rounded-2xl overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -564,6 +610,20 @@ export function HeroAnimation() {
             variant="secondary"
           >
             <Play size={18} fill="currentColor" /> Watch Demo
+          </Button>
+        </div>
+      )}
+
+      {/* Restart Button - Only show when animation completes */}
+      {!isPlaying && animationStep === 0 && hasAutoPlayed && (
+        <div className="absolute bottom-4 right-4 z-20">
+          <Button
+            size="sm"
+            onClick={startAnimation}
+            className="flex items-center gap-1 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 rounded-full"
+            variant="ghost"
+          >
+            <RefreshCw size={14} /> Replay
           </Button>
         </div>
       )}

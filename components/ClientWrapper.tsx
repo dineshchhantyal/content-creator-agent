@@ -12,6 +12,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SchematicProvider } from "@schematichq/schematic-react";
+import SchematicWrapped from "./SchematicWrapped";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,25 +45,27 @@ export default function ClientWrapper({
   return (
     <ClerkProvider>
       <SchematicProvider publishableKey="YOUR_PROJECT_ID">
-        <ThemeProvider defaultTheme="system">
-          <html lang="en">
-            <body
-              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
-              <header className="flex justify-end items-center p-4 gap-4 h-16">
-                <SignedOut>
-                  <SignInButton />
-                  <SignUpButton />
-                </SignedOut>
-                <SignedIn>
-                  <UserButton />
-                </SignedIn>
-                <ThemeToggle />
-              </header>
-              {children}
-            </body>
-          </html>
-        </ThemeProvider>
+        <SchematicWrapped>
+          <ThemeProvider defaultTheme="system">
+            <html lang="en">
+              <body
+                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+              >
+                <header className="flex justify-end items-center p-4 gap-4 h-16">
+                  <SignedOut>
+                    <SignInButton />
+                    <SignUpButton />
+                  </SignedOut>
+                  <SignedIn>
+                    <UserButton />
+                  </SignedIn>
+                  <ThemeToggle />
+                </header>
+                {children}
+              </body>
+            </html>
+          </ThemeProvider>
+        </SchematicWrapped>
       </SchematicProvider>
     </ClerkProvider>
   );

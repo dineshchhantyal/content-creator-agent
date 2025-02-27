@@ -107,7 +107,14 @@ export function HowItWorksSection() {
         {/* Steps Section */}
         <div className="relative">
           {/* Connection Line */}
-          <div className="absolute hidden md:block top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 transform -translate-y-1/2 z-0" />
+          <motion.div
+            className="absolute hidden md:block top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 transform -translate-y-1/2 z-0"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            style={{ originX: 0 }}
+            viewport={{ once: true }}
+          />
 
           <div className="grid md:grid-cols-3 gap-8 md:gap-12 relative z-10">
             {steps.map((step, index) => (
