@@ -44,7 +44,7 @@ export default function ClientWrapper({
   }
   return (
     <ClerkProvider>
-      <SchematicProvider publishableKey="YOUR_PROJECT_ID">
+      <SchematicProvider publishableKey={schematicPublishableKey}>
         <SchematicWrapped>
           <ThemeProvider defaultTheme="system">
             <html lang="en">
