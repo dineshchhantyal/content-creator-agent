@@ -1,18 +1,11 @@
 import { type Metadata } from "next";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { SchematicProvider } from "@schematichq/schematic-react";
 import SchematicWrapped from "./SchematicWrapped";
+import { AppWithProviders } from "./app-with-providers";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,25 +39,13 @@ export default function ClientWrapper({
     <ClerkProvider>
       <SchematicProvider publishableKey={schematicPublishableKey}>
         <SchematicWrapped>
-          <ThemeProvider defaultTheme="system">
-            <html lang="en">
-              <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-              >
-                <header className="flex justify-end items-center p-4 gap-4 h-16">
-                  <SignedOut>
-                    <SignInButton />
-                    <SignUpButton />
-                  </SignedOut>
-                  <SignedIn>
-                    <UserButton />
-                  </SignedIn>
-                  <ThemeToggle />
-                </header>
-                {children}
-              </body>
-            </html>
-          </ThemeProvider>
+          <html lang="en" suppressHydrationWarning>
+            <body
+              className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 flex flex-col min-h-screen`}
+            >
+              <AppWithProviders>{children}</AppWithProviders>
+            </body>
+          </html>
         </SchematicWrapped>
       </SchematicProvider>
     </ClerkProvider>
