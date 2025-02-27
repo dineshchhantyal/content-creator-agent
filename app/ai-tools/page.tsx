@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  Search,
-  Filter,
-  ChevronDown,
   Sparkles,
   Wand2,
   FileText,
@@ -14,21 +11,14 @@ import {
   FileAudio,
   Zap,
   BarChart3,
-  Check,
-  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Image from "next/image";
 import Link from "next/link";
+import { Tool } from "@/types/tool";
+import { FeaturedTool } from "@/components/ai-tools/featured-tool";
+import { ToolGrid } from "@/components/ai-tools/tool-grid";
+import { ToolFilters } from "@/components/ai-tools/tool-filters";
 
 // Tool categories
 const categories = [
@@ -40,8 +30,15 @@ const categories = [
   "Analytics",
 ];
 
+// Sort options
+const sortOptions = [
+  { name: "Most Popular", value: "popular" },
+  { name: "Newest", value: "newest" },
+  { name: "Alphabetical", value: "name" },
+];
+
 // Sample AI tools data
-const aiTools = [
+const aiTools: Tool[] = [
   {
     id: 1,
     name: "Content Analyzer",
@@ -187,13 +184,6 @@ const aiTools = [
   },
 ];
 
-// Sort options
-const sortOptions = [
-  { name: "Most Popular", value: "popular" },
-  { name: "Newest", value: "newest" },
-  { name: "Alphabetical", value: "name" },
-];
-
 export default function AIToolsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All Tools");
   const [searchQuery, setSearchQuery] = useState("");
@@ -202,36 +192,52 @@ export default function AIToolsPage() {
   const [highlightedTool, setHighlightedTool] = useState<number | null>(null);
   console.log("highlightedTool", highlightedTool);
 
-  // Filter tools based on selected category, search query, and tab
-  const filteredTools = aiTools.filter((tool) => {
-    const matchesCategory =
-      selectedCategory === "All Tools" || tool.category === selectedCategory;
-    const matchesSearch =
-      tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tool.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTab =
-      selectedTab === "all" ||
-      (selectedTab === "pro" && tool.proOnly) ||
-      (selectedTab === "free" && !tool.proOnly);
+  // Filter tools based on selected category, search query
+  const filteredTools = useMemo(() => {
+    return aiTools.filter((tool) => {
+      const matchesCategory =
+        selectedCategory === "All Tools" || tool.category === selectedCategory;
+      const matchesSearch =
+        tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tool.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesCategory && matchesSearch && matchesTab;
-  });
+      return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchQuery]);
+
+  // Filter further based on tab
+  const toolsByTab = useMemo(() => {
+    return {
+      all: filteredTools,
+      pro: filteredTools.filter((tool) => tool.proOnly),
+      free: filteredTools.filter((tool) => !tool.proOnly),
+    };
+  }, [filteredTools]);
 
   // Sort tools
-  const sortedTools = [...filteredTools].sort((a, b) => {
-    switch (sortBy) {
-      case "newest":
-        return a.new === b.new ? 0 : a.new ? -1 : 1;
-      case "name":
-        return a.name.localeCompare(b.name);
-      case "popular":
-      default:
-        return a.popular === b.popular ? 0 : a.popular ? -1 : 1;
-    }
-  });
+  const getSortedTools = (tools: Tool[]) => {
+    return [...tools].sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          return a.new === b.new ? 0 : a.new ? -1 : 1;
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "popular":
+        default:
+          return a.popular === b.popular ? 0 : a.popular ? -1 : 1;
+      }
+    });
+  };
 
   // Featured tool (first popular tool or just first tool)
   const featuredTool = aiTools.find((tool) => tool.popular) || aiTools[0];
+
+  // Reset filters handler
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("All Tools");
+    setSelectedTab("all");
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -263,80 +269,8 @@ export default function AIToolsPage() {
             </motion.p>
           </div>
 
-          {/* Featured tool card */}
-          <motion.div
-            className="max-w-6xl mx-auto rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-lg"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="relative aspect-video md:aspect-auto overflow-hidden">
-                <Image
-                  src={featuredTool.imageUrl || "/ai-tools/default.jpg"}
-                  alt={featuredTool.name}
-                  width={600}
-                  height={400}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                  <div>
-                    <Badge className="mb-2 bg-purple-500 hover:bg-purple-600 text-white border-none">
-                      Featured Tool
-                    </Badge>
-                    <h3 className="text-2xl font-bold text-white">
-                      {featuredTool.name}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6 md:p-8 flex flex-col">
-                <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mr-3">
-                    {featuredTool.icon}
-                  </div>
-                  <div>
-                    <Badge
-                      variant={featuredTool.proOnly ? "default" : "secondary"}
-                      className="mr-2"
-                    >
-                      {featuredTool.proOnly ? "Pro" : "Free"}
-                    </Badge>
-                    {featuredTool.new && <Badge variant="outline">New</Badge>}
-                  </div>
-                </div>
-
-                <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow">
-                  {featuredTool.description}
-                </p>
-
-                <div className="mb-6">
-                  <h4 className="font-medium mb-2 text-gray-800 dark:text-gray-200">
-                    Key Features:
-                  </h4>
-                  <ul className="space-y-1">
-                    {featuredTool.features.map((feature, index) => (
-                      <li
-                        key={index}
-                        className="flex items-center text-gray-600 dark:text-gray-300"
-                      >
-                        <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-fuchsia-500 hover:from-purple-700 hover:to-fuchsia-600 text-white"
-                >
-                  Try {featuredTool.name}{" "}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </motion.div>
+          {/* Featured tool */}
+          <FeaturedTool tool={featuredTool} />
         </div>
       </section>
 
@@ -344,68 +278,16 @@ export default function AIToolsPage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           {/* Filter controls */}
-          <div className="mb-8 space-y-4 md:space-y-0 md:flex md:items-center md:justify-between">
-            <div className="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar flex-nowrap">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all ${
-                    selectedCategory === category
-                      ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {/* Search input */}
-              <div className="relative flex-grow md:max-w-xs">
-                <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={18}
-                />
-                <Input
-                  placeholder="Search tools..."
-                  className="pl-10 h-10"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-
-              {/* Sort dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="h-10">
-                    <Filter size={16} className="mr-2" />
-                    Sort
-                    <ChevronDown size={16} className="ml-2" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {sortOptions.map((option) => (
-                    <DropdownMenuItem
-                      key={option.value}
-                      onClick={() => setSortBy(option.value)}
-                      className={
-                        sortBy === option.value
-                          ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
-                          : ""
-                      }
-                    >
-                      {option.name}
-                      {sortBy === option.value && (
-                        <Check className="ml-2 h-4 w-4" />
-                      )}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
+          <ToolFilters
+            categories={categories}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            sortOptions={sortOptions}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+          />
 
           {/* Tabs */}
           <div className="mb-8">
@@ -427,131 +309,31 @@ export default function AIToolsPage() {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Tools grid - shared for all tabs */}
+              {/* Tab content for "all" tools */}
               <TabsContent value="all" className="mt-0">
-                {sortedTools.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {sortedTools.map((tool) => (
-                      <motion.div
-                        key={tool.id}
-                        className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all"
-                        onMouseEnter={() => setHighlightedTool(tool.id)}
-                        onMouseLeave={() => setHighlightedTool(null)}
-                        whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="relative aspect-video">
-                          <Image
-                            src={tool.imageUrl || "/ai-tools/default.jpg"}
-                            alt={tool.name}
-                            width={400}
-                            height={225}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                            {tool.proOnly ? (
-                              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 border-none text-white">
-                                Pro Tool
-                              </Badge>
-                            ) : (
-                              <Badge variant="secondary">Free Tool</Badge>
-                            )}
-                          </div>
-                          {tool.new && (
-                            <Badge className="absolute top-3 right-3 bg-green-500 text-white border-none">
-                              New
-                            </Badge>
-                          )}
-                        </div>
-
-                        <div className="p-5">
-                          <div className="flex items-center mb-3">
-                            <div className="w-8 h-8 flex items-center justify-center rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mr-3">
-                              {tool.icon}
-                            </div>
-                            <h3 className="font-semibold text-lg">
-                              {tool.name}
-                            </h3>
-                          </div>
-
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
-                            {tool.description}
-                          </p>
-
-                          <div className="mb-4">
-                            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                              Category:{" "}
-                              <span className="font-medium">
-                                {tool.category}
-                              </span>
-                            </div>
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {tool.features
-                                .slice(0, 2)
-                                .map((feature, index) => (
-                                  <Badge
-                                    key={index}
-                                    variant="outline"
-                                    className="text-xs"
-                                  >
-                                    {feature}
-                                  </Badge>
-                                ))}
-                              {tool.features.length > 2 && (
-                                <Badge variant="outline" className="text-xs">
-                                  +{tool.features.length - 2} more
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-
-                          <Button
-                            className={`w-full ${
-                              tool.proOnly
-                                ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
-                                : ""
-                            }`}
-                            variant={tool.proOnly ? "default" : "outline"}
-                          >
-                            {tool.proOnly ? "Upgrade to Access" : "Try Now"}
-                          </Button>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-16 px-4">
-                    <div className="mb-4">
-                      <Search className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600" />
-                    </div>
-                    <h3 className="text-xl font-medium mb-2">No tools found</h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-6">
-                      Try adjusting your search or filter criteria
-                    </p>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setSelectedCategory("All Tools");
-                        setSelectedTab("all");
-                      }}
-                    >
-                      Reset filters
-                    </Button>
-                  </div>
-                )}
+                <ToolGrid
+                  tools={getSortedTools(toolsByTab.all)}
+                  onResetFilters={handleResetFilters}
+                  onHighlight={setHighlightedTool}
+                />
               </TabsContent>
 
+              {/* Tab content for "free" tools */}
               <TabsContent value="free" className="mt-0">
-                {/* Content shown in the "free" tab */}
-                {/* The shared rendering logic above will handle this */}
+                <ToolGrid
+                  tools={getSortedTools(toolsByTab.free)}
+                  onResetFilters={handleResetFilters}
+                  onHighlight={setHighlightedTool}
+                />
               </TabsContent>
 
+              {/* Tab content for "pro" tools */}
               <TabsContent value="pro" className="mt-0">
-                {/* Content shown in the "pro" tab */}
-                {/* The shared rendering logic above will handle this */}
+                <ToolGrid
+                  tools={getSortedTools(toolsByTab.pro)}
+                  onResetFilters={handleResetFilters}
+                  onHighlight={setHighlightedTool}
+                />
               </TabsContent>
             </Tabs>
           </div>
