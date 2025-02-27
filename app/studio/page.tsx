@@ -85,8 +85,9 @@ export default function StudioPage() {
           <Construction className="h-16 w-16 text-purple-500 dark:text-purple-400 mb-4" />
           <h2 className="text-2xl font-bold mb-2">Under Construction</h2>
           <p className="text-gray-600 dark:text-gray-300 max-w-md">
-            We're building something amazing! The Creator Studio is currently in
-            development. Sign up above to get notified when we launch.
+            We&lsquo;re building something amazing! The Creator Studio is
+            currently in development. Sign up above to get notified when we
+            launch.
           </p>
         </div>
       </section>
@@ -94,7 +95,7 @@ export default function StudioPage() {
       {/* Features Preview */}
       <section className="container mx-auto py-12 px-4">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
-          What's Coming to Creator Studio
+          What&lsquo;s Coming to Creator Studio
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
