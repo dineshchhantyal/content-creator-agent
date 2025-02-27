@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   SignInButton,
   SignUpButton,
@@ -10,7 +9,6 @@ import {
 } from "@clerk/nextjs";
 import { ThemeToggle } from "./theme-toggle";
 import Link from "next/link";
-import Image from "next/image";
 import { siteConfig, paths } from "@/lib/constants";
 
 import {
@@ -26,7 +24,6 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,

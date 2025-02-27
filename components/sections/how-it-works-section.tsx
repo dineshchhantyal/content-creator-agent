@@ -10,7 +10,7 @@ const steps = [
   {
     title: "Connect Your Content with URL",
     description:
-      "Simply paste your YouTube or TikTok URL and let our AI agent get to work.",
+      "Simply paste your YouTube URL and let our AI agent get to work.",
     icon: <Link className="w-6 h-6 text-white" />,
     image: "/step1-connect.svg",
   },

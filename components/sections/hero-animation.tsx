@@ -437,7 +437,8 @@ export function HeroAnimation() {
                         <div>
                           <p className="font-medium">Suggested Title</p>
                           <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
-                            "Master Photography: 10 Pro Tips for Stunning Shots"
+                            &ldquo;Master Photography: 10 Pro Tips for Stunning
+                            Shots&rdquo;
                           </p>
                         </div>
                       </motion.div>

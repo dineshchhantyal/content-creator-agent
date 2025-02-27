@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useSchematic, useSchematicEvents } from "@schematichq/schematic-react";
+import { useSchematicEvents } from "@schematichq/schematic-react";
 import { useEffect } from "react";
 
 const SchematicWrapped = ({ children }: { children: React.ReactNode }) => {

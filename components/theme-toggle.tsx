@@ -16,7 +16,6 @@ export function ThemeToggle() {
   if (!mounted) {
     return <div className="w-8 h-8" />;
   }
-  console.log(resolvedTheme);
   return (
     <Button
       variant="ghost"

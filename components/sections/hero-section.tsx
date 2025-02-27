@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { siteConfig } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Play, Sparkles, Video } from "lucide-react";
+import { ArrowRight, Sparkles, Video } from "lucide-react";
 import { HeroAnimation } from "@/components/sections/hero-animation";
 
 export function HeroSection() {
@@ -86,7 +86,7 @@ export function HeroSection() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Paste YouTube or TikTok URL..."
+                  placeholder="Paste YouTube URL..."
                   className="pl-10 h-12 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
