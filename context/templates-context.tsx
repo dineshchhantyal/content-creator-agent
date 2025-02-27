@@ -44,7 +44,7 @@ const templateData: Template[] = [
     name: "YouTube Tutorial Format",
     description:
       "Perfect structure for educational content and tutorials with step-by-step guidance",
-    imageUrl: "/templates/youtube-tutorial.jpg",
+    imageUrl: "/templates/youtube-tutorial.jpeg",
     category: "YouTube",
     rating: 4.8,
     reviews: 124,
@@ -84,7 +84,7 @@ const templateData: Template[] = [
     name: "TikTok Trend Reaction",
     description:
       "Jump on viral trends with this engaging reaction template that maximizes engagement",
-    imageUrl: "/templates/tiktok-trend.jpg",
+    imageUrl: "/templates/tiktok-trend.jpeg",
     category: "TikTok",
     rating: 4.5,
     reviews: 87,
@@ -119,7 +119,7 @@ const templateData: Template[] = [
     name: "Instagram Story Sequence",
     description:
       "Captivate your audience with this story sequence template designed for maximum engagement",
-    imageUrl: "/templates/instagram-story.jpg",
+    imageUrl: "/templates/instagram-story.jpeg",
     category: "Instagram",
     rating: 4.7,
     reviews: 93,
@@ -136,7 +136,7 @@ const templateData: Template[] = [
     name: "Podcast Interview Structure",
     description:
       "Professional format for podcast interviews with guests that creates engaging conversations",
-    imageUrl: "/templates/podcast-interview.jpg",
+    imageUrl: "/templates/podcast-interview.jpeg",
     category: "Podcast",
     rating: 4.9,
     reviews: 56,
@@ -170,7 +170,7 @@ const templateData: Template[] = [
     name: "Educational Mini-Series",
     description:
       "Perfect for breaking complex topics into digestible episodes that keep viewers coming back",
-    imageUrl: "/templates/educational-series.jpg",
+    imageUrl: "/templates/educational-series.jpeg",
     category: "Educational",
     rating: 4.8,
     reviews: 78,
@@ -221,7 +221,7 @@ const templateData: Template[] = [
     name: "Instagram Carousel Tutorial",
     description:
       "Educational content optimized for Instagram carousel posts that drives saves and shares",
-    imageUrl: "/templates/instagram-carousel.jpg",
+    imageUrl: "/templates/instagram-carousel.jpeg",
     category: "Instagram",
     rating: 4.8,
     reviews: 64,
