@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       {
         hostname: "yt3.ggpht.com",
       },
+      {
+        hostname: "img.youtube.com",
+      },
     ],
   },
 };

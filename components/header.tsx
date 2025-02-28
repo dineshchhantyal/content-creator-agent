@@ -199,18 +199,27 @@ export function Header() {
               </SignUpButton>
             </div>
           </SignedOut>
-
           <SignedIn>
-            {/* link manage-plan */}
-            <Link href={paths.managePlan} passHref>
-              <Button
-                size="sm"
-                className={`bg-gradient-to-r from-${siteConfig.colors.gradient.from} to-${siteConfig.colors.gradient.to} hover:opacity-90 text-white border-0`}
-              >
-                Manage Plan
-              </Button>
-            </Link>
-            <UserButton afterSignOutUrl={paths.home} />
+            <div className="flex items-center gap-2">
+              <Link href="/dashboard" passHref>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  Dashboard
+                </Button>
+              </Link>
+              <Link href={paths.managePlan} passHref>
+                <Button
+                  size="sm"
+                  className={`bg-gradient-to-r from-${siteConfig.colors.gradient.from} to-${siteConfig.colors.gradient.to} hover:opacity-90 text-white border-0`}
+                >
+                  Manage Plan
+                </Button>
+              </Link>
+              <UserButton afterSignOutUrl={paths.home} />
+            </div>
           </SignedIn>
 
           <ThemeToggle />
@@ -297,6 +306,23 @@ export function Header() {
                 <SignedIn>
                   <div className="flex flex-col items-center gap-4 py-4">
                     <UserButton afterSignOutUrl={paths.home} />
+                    <div className="flex flex-col gap-2 w-full">
+                      <Link href="/dashboard">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-center text-gray-700 dark:text-gray-300"
+                        >
+                          Dashboard
+                        </Button>
+                      </Link>
+                      <Link href={paths.managePlan}>
+                        <Button
+                          className={`w-full justify-center bg-gradient-to-r from-${siteConfig.colors.gradient.from} to-${siteConfig.colors.gradient.to} hover:opacity-90 text-white`}
+                        >
+                          Manage Plan
+                        </Button>
+                      </Link>
+                    </div>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                       Manage your account
                     </span>
