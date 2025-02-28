@@ -38,6 +38,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useUserVideos } from "@/hooks/useUserVideos";
 import getYoutubeVideoIdFromUrl from "@/lib/getVideoFromUrl";
+import analyzeYoutubeVideo from "@/actions/analyzeYoutubeVideo";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -52,15 +53,16 @@ export default function DashboardPage() {
     if (!videoUrl.trim()) return;
 
     setIsAnalyzing(true);
+    const formData = new FormData();
+    formData.append("url", videoUrl);
+    if (user?.id) {
+      formData.append("userId", user.id);
+    }
 
     try {
-      const videoId = getYoutubeVideoIdFromUrl(videoUrl);
-      if (!videoId) {
-        throw new Error("Invalid YouTube URL");
-      }
-      router.push(`/video/${videoId}/analyze`);
+      await analyzeYoutubeVideo(formData);
     } catch (error) {
-      console.error("Error analyzing video:", error);
+      console.error(error);
       setIsAnalyzing(false);
     }
   };
