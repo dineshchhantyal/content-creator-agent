@@ -32,4 +32,12 @@ export default defineSchema({
     .index("by_user_id", ["userId"])
     .index("by_video_id", ["videoId"])
     .index("by_user_and_video", ["userId", "videoId"]),
+  images: defineTable({
+    videoId: v.string(),
+    userId: v.string(),
+    storageId: v.string(),
+    title: v.optional(v.string()),
+    description: v.optional(v.string()),
+    type: v.optional(v.string()),
+  }).index("by_user_and_video", ["userId", "videoId"]),
 });

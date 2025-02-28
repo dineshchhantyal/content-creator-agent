@@ -3,17 +3,12 @@ import React from "react";
 import Usage from "../metrics/Usage";
 import { FeatureFlag } from "../features/flags";
 import Image from "next/image";
+import { useImages } from "@/hooks/useImages";
 
 const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
   const { user } = useUser();
 
-  const images: {
-    id: string;
-    url: string;
-    width: number;
-    height: number;
-  }[] = [];
-
+  const { images = [] } = useImages(videoId, user?.id ?? "");
   console.log("ThumbnailGeneration", { videoId, user, images });
 
   return (
@@ -27,14 +22,14 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
 
       <div>
         {images.map((image) => (
-          <div key={image.id}>
+          <div key={image._id}>
             {image.url && (
               <div>
                 <Image
                   src={image.url}
                   alt="Thumbnail"
-                  width={image.width}
-                  height={image.height}
+                  width={1280}
+                  height={720}
                 />
               </div>
             )}
