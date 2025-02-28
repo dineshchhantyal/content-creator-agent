@@ -13,7 +13,7 @@ export const featureFlagEvents: Record<
   }
 > = {
   [FeatureFlag.TRANSCRIPTION]: {
-    event: "transcription",
+    event: "transcribe",
   },
   [FeatureFlag.IMAGE_GENERATION]: {
     event: "image-generation",

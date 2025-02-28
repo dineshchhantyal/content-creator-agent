@@ -1,20 +1,30 @@
 import React, { memo } from "react";
 import { motion } from "framer-motion";
-import { User, Sparkles } from "lucide-react";
+import { User, Sparkles, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ChatMessage } from "./types";
+import { ExtendedChatMessage } from "./types";
 import { MessageContent } from "./message-content";
+import { Button } from "@/components/ui/button";
 
 interface MessageBubbleProps {
-  message: ChatMessage;
+  message: ExtendedChatMessage;
+  onExpand?: (id: string) => void;
 }
 
 // Wrap the component with memo to prevent unnecessary re-renders
 export const MessageBubble = memo(function MessageBubble({
   message,
+  onExpand,
 }: MessageBubbleProps) {
   // Extract role to simplify conditional checks
   const isUser = message.role === "user";
+
+  // Handler for expanding truncated content
+  const handleExpand = () => {
+    if (message.isTruncated && onExpand) {
+      onExpand(message.id);
+    }
+  };
 
   return (
     <motion.div
@@ -45,7 +55,23 @@ export const MessageBubble = memo(function MessageBubble({
         {isUser ? (
           <p>{message.content}</p>
         ) : (
-          <MessageContent message={message} />
+          <>
+            <MessageContent message={message} />
+
+            {message.isTruncated && (
+              <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleExpand}
+                  className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1"
+                >
+                  <ChevronDown size={14} />
+                  Show full message
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
 

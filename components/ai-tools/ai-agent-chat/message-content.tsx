@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { ChatMessage } from "./types";
+import { ExtendedChatMessage } from "./types";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
@@ -12,7 +12,7 @@ import {
 } from "./message-parts";
 
 interface MessageContentProps {
-  message: ChatMessage;
+  message: ExtendedChatMessage;
 }
 
 // Use memo to prevent unnecessary re-renders
