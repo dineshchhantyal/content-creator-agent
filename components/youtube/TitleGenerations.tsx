@@ -11,7 +11,7 @@ const TitleGenerations = ({ videoId }: { videoId: string }) => {
     id: string;
     text: string;
   }
-
+  console.log(videoId, user);
   const titles: Title[] = [];
   return (
     <div>

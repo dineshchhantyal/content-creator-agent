@@ -10,7 +10,7 @@ interface TranscriptionEntry {
   text: string;
 }
 const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
-  const [transcript, setTranscript] = React.useState<{
+  const [transcript] = React.useState<{
     transcript: TranscriptionEntry[];
     cache: string;
   } | null>(null);
@@ -18,6 +18,8 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
   const { featureUsageExceeded } = useSchematicEntitlement(
     FeatureFlag.TRANSCRIPTION
   );
+
+  console.log("featureUsageExceeded", { featureUsageExceeded, videoId });
   return (
     <div>
       <div>

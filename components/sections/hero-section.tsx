@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { siteConfig } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
