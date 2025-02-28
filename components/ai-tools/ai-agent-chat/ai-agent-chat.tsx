@@ -21,6 +21,8 @@ import remarkGfm from "remark-gfm";
 import Markdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import { useSchematicFlag } from "@schematichq/schematic-react";
+import { FeatureFlag } from "@/components/features/flags";
 
 // Add this to your component or a separate CSS file
 const latexStyles = `
@@ -36,6 +38,7 @@ const latexStyles = `
 `;
 
 const AiAgentChat = ({ videoId }: { videoId: string }) => {
+  const isVideoAnalyzeEnabled = useSchematicFlag(FeatureFlag.ANALYZE_VIDEO);
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       maxSteps: 5,
@@ -47,8 +50,9 @@ const AiAgentChat = ({ videoId }: { videoId: string }) => {
         {
           id: "welcome",
           role: "assistant",
-          content:
-            "Hi there! I'm your AI assistant for this video. Ask me any questions about the content, and I'll help you analyze it or provide insights.",
+          content: isVideoAnalyzeEnabled
+            ? "Hi there! I'm your AI assistant for this video. Ask me any questions about the content, and I'll help you analyze it or provide insights."
+            : "This feature requires a paid subscription. Upgrade your plan to chat with AI about your videos and get in-depth analysis.",
         },
       ],
     });
@@ -322,41 +326,60 @@ const AiAgentChat = ({ videoId }: { videoId: string }) => {
 
         {/* Input Form - Fixed height */}
         <div className="flex-shrink-0 p-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <form onSubmit={handleFormSubmit} className="flex flex-col space-y-1">
-            <div className="relative">
-              <Textarea
-                ref={inputRef}
-                value={input}
-                onChange={handleInputChange}
-                placeholder="Ask a question about your video..."
-                className="resize-none h-[60px] max-h-[100px] pr-10 text-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus-visible:ring-purple-500"
-                disabled={isLoading}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleFormSubmit(e);
-                  }
-                }}
-                rows={2}
-              />
-              <Button
-                type="submit"
-                size="sm"
-                disabled={input.trim().length === 0 || isLoading}
-                className="absolute right-2 bottom-2 h-6 w-6 p-0 bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                <Send className="h-3 w-3" />
-              </Button>
+          {!isVideoAnalyzeEnabled ? (
+            <div className="py-2 px-3 rounded-md bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800">
+              <p className="text-amber-800 dark:text-amber-200 text-sm">
+                Chat with AI about this video is not available in your current
+                plan.{" "}
+                <a
+                  href="/settings/plan"
+                  className="text-purple-600 dark:text-purple-400 underline"
+                >
+                  Upgrade your plan
+                </a>{" "}
+                to unlock this feature.
+              </p>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-              Enter to send, Shift+Enter for new line
-            </p>
-          </form>
+          ) : (
+            <form
+              onSubmit={handleFormSubmit}
+              className="flex flex-col space-y-1"
+            >
+              <div className="relative">
+                <Textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder="Ask a question about your video..."
+                  className="resize-none h-[60px] max-h-[100px] pr-10 text-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus-visible:ring-purple-500"
+                  disabled={isLoading}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleFormSubmit(e);
+                    }
+                  }}
+                  rows={2}
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={input.trim().length === 0 || isLoading}
+                  className="absolute right-2 bottom-2 h-6 w-6 p-0 bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  <Send className="h-3 w-3" />
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                Enter to send, Shift+Enter for new line
+              </p>
+            </form>
+          )}
         </div>
 
         {/* Suggestions - At the bottom of the container with fixed height */}
         <AnimatePresence>
-          {showSuggestions && messages.length <= 2 && (
+          {showSuggestions && messages.length <= 2 && isVideoAnalyzeEnabled && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
