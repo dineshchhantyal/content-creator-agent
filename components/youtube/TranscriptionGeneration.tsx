@@ -1,41 +1,272 @@
 "use client";
 
+import React, { useState } from "react";
 import { useSchematicEntitlement } from "@schematichq/schematic-react";
-import React from "react";
 import { FeatureFlag } from "../features/flags";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Copy, FileText, Loader2, Play, Plus, FileEdit } from "lucide-react";
+import { motion } from "framer-motion";
 import Usage from "../metrics/Usage";
+import { Textarea } from "../ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 interface TranscriptionEntry {
   id: string;
   text: string;
+  timestamp: string;
 }
+
 const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
-  const [transcript] = React.useState<{
+  const [transcript, setTranscript] = useState<{
     transcript: TranscriptionEntry[];
-    cache: string;
+    fullText: string;
   } | null>(null);
+
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editedText, setEditedText] = useState("");
+  const [copiedTimestamp, setCopiedTimestamp] = useState<string | null>(null);
 
   const { featureUsageExceeded } = useSchematicEntitlement(
     FeatureFlag.TRANSCRIPTION
   );
 
-  console.log("featureUsageExceeded", { featureUsageExceeded, videoId });
+  const generateTranscription = async () => {
+    setIsGenerating(true);
+
+    // Simulate AI generation with a timeout
+    setTimeout(() => {
+      // Example transcript data
+      const mockTranscript = [
+        {
+          id: "1",
+          timestamp: "0:00",
+          text: "Hello and welcome to my channel.",
+        },
+        {
+          id: "2",
+          timestamp: "0:05",
+          text: "Today we're going to discuss the latest trends in AI technology.",
+        },
+        {
+          id: "3",
+          timestamp: "0:12",
+          text: "Machine learning has made incredible progress in recent years.",
+        },
+        {
+          id: "4",
+          timestamp: "0:18",
+          text: "Let's dive into some of the most exciting developments.",
+        },
+      ];
+
+      const fullText = mockTranscript.map((entry) => entry.text).join(" ");
+
+      setTranscript({
+        transcript: mockTranscript,
+        fullText: fullText,
+      });
+
+      setEditedText(fullText);
+      setIsGenerating(false);
+    }, 2000);
+  };
+
+  const copyToClipboard = (timestamp: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedTimestamp(timestamp);
+    setTimeout(() => setCopiedTimestamp(null), 2000);
+  };
+
+  const copyFullTranscript = () => {
+    if (transcript) {
+      navigator.clipboard.writeText(
+        editMode ? editedText : transcript.fullText
+      );
+      // Show a success toast or feedback here
+    }
+  };
+
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+    if (!editMode && transcript) {
+      setEditedText(transcript.fullText);
+    }
+  };
+
+  const saveTranscript = () => {
+    if (transcript) {
+      setTranscript({
+        ...transcript,
+        fullText: editedText,
+      });
+      setEditMode(false);
+      // Here you would typically save to your backend
+    }
+  };
+
   return (
-    <div>
-      <div>
-        <Usage
-          featureFlag={FeatureFlag.TRANSCRIPTION}
-          title="Transcription Generation"
-        />
-      </div>
-      <div>
-        {transcript?.transcript.map((entry) => (
-          <div key={entry.id}>
-            <div>{entry.text}</div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.3 }}
+    >
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-medium">Transcription</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4">
+            <Usage
+              featureFlag={FeatureFlag.TRANSCRIPTION}
+              title="Transcription Generation"
+            />
           </div>
-        ))}
-      </div>
-    </div>
+
+          {transcript ? (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                  Video Transcript
+                </h3>
+                <div className="flex space-x-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={copyFullTranscript}
+                          className="h-8 px-2 text-gray-600 dark:text-gray-300"
+                        >
+                          <Copy size={14} className="mr-1" /> Copy All
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Copy full transcript</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={toggleEditMode}
+                          className={`h-8 px-2 ${
+                            editMode
+                              ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800"
+                              : "text-gray-600 dark:text-gray-300"
+                          }`}
+                        >
+                          <FileEdit size={14} className="mr-1" />{" "}
+                          {editMode ? "Cancel Edit" : "Edit"}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit transcript</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+
+              {editMode ? (
+                <div className="space-y-3">
+                  <Textarea
+                    value={editedText}
+                    onChange={(e) => setEditedText(e.target.value)}
+                    className="min-h-[200px] text-sm border-gray-200 dark:border-gray-700"
+                  />
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={saveTranscript}
+                      className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white"
+                    >
+                      Save Changes
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 text-sm">
+                  {transcript.transcript.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="group flex justify-between items-start p-3 rounded-md border border-gray-200 dark:border-gray-800 hover:border-purple-300 dark:hover:border-purple-700 bg-gray-50 dark:bg-gray-800/30"
+                    >
+                      <div className="flex gap-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-14 justify-center text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        >
+                          <Play size={10} className="mr-1" /> {entry.timestamp}
+                        </Button>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                          {entry.text}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() =>
+                          copyToClipboard(entry.timestamp, entry.text)
+                        }
+                        className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                      >
+                        <Copy className="h-3.5 w-3.5 text-gray-500" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-10 space-y-4">
+              <div className="bg-gray-50 dark:bg-gray-800/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                <FileText
+                  size={24}
+                  className="text-purple-600 dark:text-purple-400"
+                />
+              </div>
+              <div>
+                <p className="text-gray-900 dark:text-gray-100 font-medium">
+                  Create Video Transcript
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mt-1 max-w-md mx-auto">
+                  Generate an accurate transcript of your video content that you
+                  can edit, export, and use for creating subtitles.
+                </p>
+              </div>
+              <Button
+                onClick={generateTranscription}
+                disabled={isGenerating || featureUsageExceeded}
+                className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" />{" "}
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Plus size={16} className="mr-2" /> Generate Transcript
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

@@ -4,10 +4,20 @@ import getVideoDetails from "@/actions/getVideoDetails";
 import { YoutubeVideoDetails as YoutubeVideoDetailsType } from "@/types/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Eye, MessageCircle, ThumbsUp, Calendar, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Eye,
+  MessageCircle,
+  ThumbsUp,
+  Calendar,
+  Users,
+  ExternalLink,
+  BarChart2,
+} from "lucide-react";
 import formatNumber from "@/lib/formatNumber";
+import { motion } from "framer-motion";
 
 function YoutubeVideoDetails({ videoId }: { videoId: string }) {
   const [video, setVideo] = useState<YoutubeVideoDetailsType | null>(null);
@@ -31,20 +41,24 @@ function YoutubeVideoDetails({ videoId }: { videoId: string }) {
 
   if (isLoading) {
     return (
-      <Card className="w-full bg-white dark:bg-gray-900 shadow-lg">
-        <CardContent className="p-6">
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm overflow-hidden">
+        <CardContent className="p-0">
           <div className="space-y-4">
-            <Skeleton className="h-48 w-full rounded-lg" />
-            <Skeleton className="h-6 w-3/4" />
-            <div className="flex justify-between">
-              <Skeleton className="h-4 w-1/4" />
-              <Skeleton className="h-4 w-1/4" />
-            </div>
-            <div className="flex space-x-4">
-              <Skeleton className="h-12 w-12 rounded-full" />
-              <div className="space-y-2 flex-1">
-                <Skeleton className="h-4 w-1/3" />
-                <Skeleton className="h-3 w-1/4" />
+            <Skeleton className="h-64 w-full" />
+            <div className="p-6 space-y-4">
+              <Skeleton className="h-7 w-3/4" />
+              <div className="flex flex-wrap gap-2">
+                <Skeleton className="h-6 w-20 rounded-full" />
+                <Skeleton className="h-6 w-20 rounded-full" />
+                <Skeleton className="h-6 w-20 rounded-full" />
+              </div>
+              <Skeleton className="h-5 w-56" />
+              <div className="flex items-center space-x-3 pt-4 mt-4 border-t border-gray-200 dark:border-gray-800">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-5 w-36" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
               </div>
             </div>
           </div>
@@ -55,7 +69,7 @@ function YoutubeVideoDetails({ videoId }: { videoId: string }) {
 
   if (!video) {
     return (
-      <Card className="w-full bg-white dark:bg-gray-900 shadow-lg">
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm">
         <CardContent className="p-6">
           <div className="text-center py-8">
             <p className="text-gray-500 dark:text-gray-400">
@@ -94,94 +108,102 @@ function YoutubeVideoDetails({ videoId }: { videoId: string }) {
   }
 
   return (
-    <Card className="w-full bg-white dark:bg-gray-900 shadow-lg overflow-hidden">
-      <CardContent className="p-0">
-        <div className="@container">
-          <div className="@md:flex">
-            {/* Video Thumbnail */}
-            <div className="@md:w-2/5 relative overflow-hidden">
-              <div className="aspect-video">
-                <Image
-                  src={video.thumbnail}
-                  alt={video.title}
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority
-                />
-              </div>
-            </div>
-
-            {/* Video Details */}
-            <div className="@md:w-3/5 p-6">
-              <h2 className="text-xl md:text-2xl font-bold line-clamp-2 mb-2">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm overflow-hidden">
+        <CardHeader className="p-0">
+          <div className="relative aspect-video bg-gray-100 dark:bg-gray-800">
+            <Image
+              src={video.thumbnail}
+              alt={video.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div className="absolute bottom-4 left-4 right-4">
+              <h2 className="text-xl sm:text-2xl font-bold line-clamp-2 text-white drop-shadow-sm">
                 {video.title}
               </h2>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6">
+          {/* Video Stats */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="flex items-center gap-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 px-2.5 py-1 rounded-full text-sm font-medium">
+              <Eye className="h-3.5 w-3.5" />
+              <span>{formatNumber(video.views)} views</span>
+            </span>
+            <span className="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 px-2.5 py-1 rounded-full text-sm font-medium">
+              <ThumbsUp className="h-3.5 w-3.5" />
+              <span>{formatNumber(video.likes)}</span>
+            </span>
+            <span className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full text-sm font-medium">
+              <MessageCircle className="h-3.5 w-3.5" />
+              <span>{formatNumber(video.comments)}</span>
+            </span>
+          </div>
 
-              {/* Video Stats */}
-              <div className="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-400 gap-x-4 gap-y-2 mb-4">
-                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800/70 px-2 py-1 rounded-full">
-                  <Eye className="h-3.5 w-3.5" />
-                  <span>{formatNumber(video.views)} views</span>
-                </div>
-                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800/70 px-2 py-1 rounded-full">
-                  <ThumbsUp className="h-3.5 w-3.5" />
-                  <span>{formatNumber(video.likes)}</span>
-                </div>
-                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800/70 px-2 py-1 rounded-full">
-                  <MessageCircle className="h-3.5 w-3.5" />
-                  <span>{formatNumber(video.comments)}</span>
-                </div>
-              </div>
+          {/* Published Date */}
+          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mb-6">
+            <Calendar className="h-3.5 w-3.5" />
+            <span>
+              Published {timeAgo} • {formattedDate}
+            </span>
+          </div>
 
-              {/* Published Date */}
-              <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mb-6">
-                <Calendar className="h-3.5 w-3.5" />
+          {/* Channel Info */}
+          <div className="flex items-center pt-4 border-t border-gray-200 dark:border-gray-800">
+            <div className="relative h-12 w-12 rounded-full overflow-hidden mr-3 ring-2 ring-purple-500/20">
+              <Image
+                src={video.channel.thumbnail}
+                alt={video.channel.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <h4 className="font-medium">{video.channel.title}</h4>
+              <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                <Users className="h-3 w-3" />
                 <span>
-                  Published {timeAgo} • {formattedDate}
+                  {formatNumber(video.channel.subscribers)} subscribers
                 </span>
-              </div>
-
-              {/* Channel Info */}
-              <div className="flex items-center mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
-                <div className="relative h-12 w-12 rounded-full overflow-hidden mr-3 ring-2 ring-purple-500/20">
-                  <Image
-                    src={video.channel.thumbnail}
-                    alt={video.channel.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <h4 className="font-medium">{video.channel.title}</h4>
-                  <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                    <Users className="h-3 w-3" />
-                    <span>
-                      {formatNumber(video.channel.subscribers)} subscribers
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="mt-6 flex gap-2">
-                <a
-                  href={`https://youtube.com/watch?v=${videoId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
-                >
-                  Watch on YouTube
-                </a>
-                <button className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-medium rounded-md transition-colors">
-                  Analyze Performance
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+
+          {/* Action Buttons */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Button
+              asChild
+              variant="default"
+              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
+            >
+              <a
+                href={`https://youtube.com/watch?v=${videoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1"
+              >
+                <ExternalLink size={14} /> Watch on YouTube
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              className="border-gray-300 dark:border-gray-700"
+            >
+              <BarChart2 size={14} className="mr-1" /> Performance Metrics
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 

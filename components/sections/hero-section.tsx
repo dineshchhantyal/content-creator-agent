@@ -6,23 +6,31 @@ import { motion } from "framer-motion";
 import { siteConfig } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Sparkles, Video } from "lucide-react";
+import { ArrowRight, Sparkles, Video, Loader2 } from "lucide-react";
 import { HeroAnimation } from "@/components/sections/hero-animation";
 import analyzeYoutubeVideo from "@/actions/analyzeYoutubeVideo";
 
 export function HeroSection() {
   const [videoUrl, setVideoUrl] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!videoUrl.trim()) return;
+
+    setIsAnalyzing(true);
+    setError("");
+
     const formData = new FormData();
     formData.append("url", videoUrl);
 
-    // Redirect to video analysis page
     try {
-      analyzeYoutubeVideo(formData);
+      await analyzeYoutubeVideo(formData);
     } catch (error) {
       console.error(error);
+      setError("Failed to analyze video. Please check the URL and try again.");
+      setIsAnalyzing(false);
     }
   };
 
@@ -79,7 +87,7 @@ export function HeroSection() {
             </motion.p>
 
             <motion.form
-              className="flex flex-col sm:flex-row gap-3 mb-8 max-w-md mx-auto lg:mx-0"
+              className="flex flex-col sm:flex-row gap-3 mb-3 max-w-md mx-auto lg:mx-0"
               onSubmit={handleSubmit}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -95,16 +103,36 @@ export function HeroSection() {
                   className="pl-10 h-12 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
+                  disabled={isAnalyzing}
                 />
               </div>
               <Button
                 type="submit"
                 className={`h-12 bg-gradient-to-r from-${siteConfig.colors.gradient.from} to-${siteConfig.colors.gradient.to} hover:opacity-90 transition-all text-white px-6`}
-                disabled={!videoUrl}
+                disabled={!videoUrl.trim() || isAnalyzing}
               >
-                Analyze Video <ArrowRight size={16} className="ml-2" />
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    Analyze Video <ArrowRight size={16} className="ml-2" />
+                  </>
+                )}
               </Button>
             </motion.form>
+
+            {error && (
+              <motion.div
+                className="text-sm text-red-500 mb-4 max-w-md mx-auto lg:mx-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                {error}
+              </motion.div>
+            )}
 
             <motion.div
               className="text-sm text-gray-500 dark:text-gray-400"

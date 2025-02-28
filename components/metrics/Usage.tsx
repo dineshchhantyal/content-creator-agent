@@ -8,8 +8,15 @@ import {
   useSchematicIsPending,
 } from "@schematichq/schematic-react";
 import { Progress } from "../ui/progress";
-import { Card, CardContent } from "../ui/card";
-import { BatteryFull, BatteryLow, BatteryMedium, Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+  BatteryFull,
+  BatteryLow,
+  BatteryMedium,
+  Loader2,
+  ArrowRight,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function Usage({
   featureFlag,
@@ -49,7 +56,7 @@ export default function Usage({
 
   if (isPending) {
     return (
-      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm">
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm">
         <CardContent className="p-6 flex items-center justify-center">
           <div className="flex flex-col items-center justify-center space-y-2">
             <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
@@ -64,21 +71,21 @@ export default function Usage({
 
   if (!isFeatureEnabled) {
     return (
-      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm">
-        <CardContent className="p-6">
-          <div className="text-center py-4">
-            <h3 className="text-lg font-medium mb-2">{title}</h3>
-            <div className="bg-gray-100 dark:bg-gray-800/60 rounded-lg p-4 mt-2">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                This feature is not available on your current plan.
-              </p>
-              <a
-                href="/manage-plan"
-                className="inline-block mt-3 text-sm text-purple-600 dark:text-purple-400 font-medium hover:underline"
-              >
-                Upgrade to access {title}
-              </a>
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-medium">{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/10 rounded-lg border border-purple-100 dark:border-purple-900/30 p-4">
+            <div className="text-sm text-purple-700 dark:text-purple-400">
+              This feature is not available on your current plan.
             </div>
+            <Link
+              href="/manage-plan"
+              className="mt-3 inline-flex items-center gap-1 text-sm font-medium bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-colors"
+            >
+              Upgrade Now <ArrowRight size={14} />
+            </Link>
           </div>
         </CardContent>
       </Card>
@@ -87,28 +94,29 @@ export default function Usage({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.4 }}
     >
-      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-medium">{title}</h3>
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center justify-between">
+            <span className="text-lg font-medium">{title}</span>
             {getProgressIcon(progress)}
-          </div>
-
-          <div className="mb-4">
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="mb-3">
             <Progress
               value={progress}
               className={`h-2.5 rounded-full bg-gray-100 dark:bg-gray-800 [&>*]:${progressColorClass}`}
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium">
               {hasUsedAllTokens ? (
-                <span className="text-red-500">Limit reached</span>
+                <span className="text-red-500">Usage limit reached</span>
               ) : (
                 <span>
                   <span className="font-semibold">
@@ -120,18 +128,18 @@ export default function Usage({
             </span>
 
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {progress.toFixed(0)}% used
+              {Math.min(progress, 100).toFixed(0)}% used
             </span>
           </div>
 
           {hasUsedAllTokens && (
-            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
-              <a
+            <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-800">
+              <Link
                 href="/manage-plan"
-                className="text-sm text-center w-full inline-block p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-md font-medium hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
+                className="text-sm text-center w-full inline-flex items-center justify-center gap-1 p-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-md font-medium transition-colors"
               >
-                Upgrade to increase limit
-              </a>
+                Upgrade to increase limit <ArrowRight size={14} />
+              </Link>
             </div>
           )}
         </CardContent>
