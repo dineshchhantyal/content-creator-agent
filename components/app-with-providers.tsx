@@ -5,7 +5,13 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { SchematicProvider } from "@schematichq/schematic-react";
 import SchematicWrapped from "./SchematicWrapped";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, useAuth } from "@clerk/nextjs";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
+import { ConvexReactClient } from "convex/react";
+
+export const convex = new ConvexReactClient(
+  process.env.NEXT_PUBLIC_CONVEX_URL!
+);
 
 export function AppWithProviders({ children }: { children: React.ReactNode }) {
   const schematicPublishableKey =
@@ -18,15 +24,17 @@ export function AppWithProviders({ children }: { children: React.ReactNode }) {
   }
   return (
     <ClerkProvider>
-      <SchematicProvider publishableKey={schematicPublishableKey}>
-        <SchematicWrapped>
-          <ThemeProvider defaultTheme="system">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </ThemeProvider>
-        </SchematicWrapped>
-      </SchematicProvider>
+      <ConvexProviderWithClerk useAuth={useAuth} client={convex}>
+        <SchematicProvider publishableKey={schematicPublishableKey}>
+          <SchematicWrapped>
+            <ThemeProvider defaultTheme="system">
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </ThemeProvider>
+          </SchematicWrapped>
+        </SchematicProvider>
+      </ConvexProviderWithClerk>
     </ClerkProvider>
   );
 }
