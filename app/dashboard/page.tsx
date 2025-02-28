@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -299,7 +298,18 @@ function VideoCardSkeleton() {
   );
 }
 
-function VideoCard({ video, index }: { video: any; index: number }) {
+interface VideoCardProps {
+  video: Partial<{
+    videoId: string;
+    titles: { title: string }[];
+    images: { url: string | null }[];
+    hasTranscript: boolean;
+    _creationTime: number;
+  }>;
+  index: number;
+}
+
+function VideoCard({ video, index }: VideoCardProps) {
   const { videoId, titles, images, hasTranscript, _creationTime } = video;
   const mainImage = images && images.length > 0 ? images[0].url : null;
   const mainTitle =
