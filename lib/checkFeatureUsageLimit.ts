@@ -16,9 +16,15 @@ export async function checkFeatureUsageLimit(
       },
     });
 
+    console.log({ f: entitlements.data.features[2].feature });
     const feature = entitlements.data.features.find(
       (feature) => feature.feature?.eventSubtype === eventSubtype
     );
+
+    console.log({
+      feature,
+      eventSubtype,
+    });
 
     if (!feature) {
       return {

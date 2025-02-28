@@ -19,12 +19,12 @@ export const featureFlagEvents: Record<
     event: "image-generation",
   },
   [FeatureFlag.ANALYZE_VIDEO]: {
-    event: "analyze-video",
+    event: "analyse-video",
   },
   [FeatureFlag.TITLE_GENERATION]: {
-    event: "title-generation",
+    event: "title-generations",
   },
   [FeatureFlag.SCRIPT_GENERATION]: {
-    event: "",
+    event: "script-generation",
   },
 };

@@ -22,8 +22,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
-import { Doc } from "@/convex/_generated/dataModel";
 import createOrGetVideo from "@/actions/createOrGetVideo";
+import { toast } from "sonner";
 
 const VideoAnalyzePage = () => {
   const params = useParams<{ videoId: string }>();
@@ -39,6 +39,9 @@ const VideoAnalyzePage = () => {
 
       const fetchVideo = async () => {
         const response = await createOrGetVideo(params.videoId);
+        if (!response.success) {
+          toast(response.error ?? "Error fetching video");
+        }
         console.log({ response });
         if (!response) {
           throw new Error("Video not found");

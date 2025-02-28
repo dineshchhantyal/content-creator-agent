@@ -28,9 +28,9 @@ const getVideoDetails = async (videoId: string) => {
     const video: YoutubeVideoDetails = {
       title: videoDetails.snippet?.title || "Unknown",
       thumbnail:
+        videoDetails.snippet?.thumbnails?.high?.url ||
         videoDetails.snippet?.thumbnails?.default?.url ||
         videoDetails.snippet?.thumbnails?.medium?.url ||
-        videoDetails.snippet?.thumbnails?.high?.url ||
         "",
       publishedAt:
         videoDetails.snippet?.publishedAt || new Date().toISOString(),

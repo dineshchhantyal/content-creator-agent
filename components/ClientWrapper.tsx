@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { AppWithProviders } from "./app-with-providers";
 
+import { Toaster } from "@/components/ui/sonner";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,6 +31,8 @@ export default function ClientWrapper({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 flex flex-col min-h-screen`}
       >
+        {" "}
+        <Toaster />
         <AppWithProviders>{children}</AppWithProviders>
       </body>
     </html>
