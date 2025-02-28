@@ -13,5 +13,5 @@ export default async function analyzeYoutubeVideo(formData: FormData) {
     return;
   }
 
-  redirect(`/video/?url=${encodeURIComponent(videoId)}`);
+  redirect(`/video/${videoId}/analyze`);
 }
