@@ -1,4 +1,6 @@
+import { FeatureFlag, featureFlagEvents } from "@/components/features/flags";
 import { api } from "@/convex/_generated/api";
+import { client } from "@/lib/schematic";
 import { currentUser } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
 import { Innertube } from "youtubei.js";
@@ -78,7 +80,15 @@ const getYoutubeVideoTranscript = async (videoId: string) => {
       videoId,
       transcript,
     });
-
+    await client.track({
+      event: featureFlagEvents[FeatureFlag.TRANSCRIPTION].event,
+      company: {
+        id: user.id,
+      },
+      user: {
+        id: user.id,
+      },
+    });
     return {
       transcript,
       cache: false,

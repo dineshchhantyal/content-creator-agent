@@ -5,6 +5,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import { TranscriptEntry } from "@/actions/getYoutubeVideoTranscript";
 
 interface MessagePartProps {
   part: MessagePart;
@@ -52,60 +53,123 @@ export function ToolInvocationPart({ part }: MessagePartProps) {
         toolResult.text !== undefined
       ) {
         // Handle different transcript formats
-        let transcriptText = "";
         let isCached = false;
+        let transcriptData = null;
 
         try {
-          // Check if transcript is a string directly
+          // Check for cache flag
+          if (toolResult.cache !== undefined) {
+            isCached = Boolean(toolResult.cache);
+          }
+
+          // Handle array format transcript (from getYoutubeVideoTranscript)
+          if (Array.isArray(toolResult.transcript)) {
+            transcriptData = toolResult.transcript;
+
+            return (
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5 text-xs font-medium">
+                  <CheckCircleIcon className="h-3 w-3" />
+                  Transcript Retrieved
+                  {isCached && (
+                    <span className="ml-2 text-xs bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 px-1.5 py-0.5 rounded-full">
+                      From cache
+                    </span>
+                  )}
+                </div>
+                <div className="max-h-64 overflow-y-auto border border-amber-200/30 dark:border-amber-700/30 rounded bg-amber-50/50 dark:bg-amber-900/20 text-xs">
+                  <table className="w-full">
+                    <thead className="sticky top-0 bg-amber-100/80 dark:bg-amber-900/80 backdrop-blur-sm">
+                      <tr>
+                        <th className="px-3 py-2 text-left font-medium text-amber-900 dark:text-amber-100 border-b border-amber-200/50 dark:border-amber-700/50">
+                          Time
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium text-amber-900 dark:text-amber-100 border-b border-amber-200/50 dark:border-amber-700/50">
+                          Content
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transcriptData.map(
+                        (entry: TranscriptEntry, idx: number) => (
+                          <tr
+                            key={`transcript-${idx}`}
+                            className={
+                              idx % 2 === 0
+                                ? "bg-amber-50/50 dark:bg-amber-900/10"
+                                : "bg-amber-100/20 dark:bg-amber-900/20"
+                            }
+                          >
+                            <td className="px-3 py-1.5 font-mono text-amber-800 dark:text-amber-300 border-b border-amber-100/30 dark:border-amber-800/30 whitespace-nowrap">
+                              {entry.timestamp}
+                            </td>
+                            <td className="px-3 py-1.5 text-amber-900 dark:text-amber-50 border-b border-amber-100/30 dark:border-amber-800/30">
+                              {entry.text}
+                            </td>
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          }
+
+          // Handle string transcript
+          let transcriptText = "";
           if (typeof toolResult.transcript === "string") {
             transcriptText = toolResult.transcript;
-          }
-          // Check if text is a string directly
-          else if (typeof toolResult.text === "string") {
+          } else if (typeof toolResult.text === "string") {
             transcriptText = toolResult.text;
-          }
-          // Check if it's an object with transcript/text properties
-          else if (
+          } else if (
             typeof toolResult.transcript === "object" &&
             toolResult.transcript
           ) {
             if (typeof toolResult.transcript.text === "string") {
               transcriptText = toolResult.transcript.text;
             } else {
-              transcriptText = JSON.stringify(toolResult.transcript);
+              transcriptText = JSON.stringify(toolResult.transcript, null, 2);
             }
           } else {
-            // Fallback to stringified version
             transcriptText = JSON.stringify(
-              toolResult.transcript || toolResult.text
+              toolResult.transcript || toolResult.text,
+              null,
+              2
             );
           }
 
-          // Check for cache flag - ensure we're only accessing properties that exist
-          if (toolResult.cache !== undefined) {
-            isCached = Boolean(toolResult.cache);
-          }
+          return (
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-medium">
+                <CheckCircleIcon className="h-3 w-3" />
+                Transcript Retrieved
+                {isCached && (
+                  <span className="ml-2 text-xs bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 px-1.5 py-0.5 rounded-full">
+                    From cache
+                  </span>
+                )}
+              </div>
+              <div className="max-h-48 overflow-y-auto border border-amber-200/30 dark:border-amber-700/30 rounded p-2 bg-amber-50/50 dark:bg-amber-900/20 text-xs">
+                {transcriptText}
+              </div>
+            </div>
+          );
         } catch (e) {
           console.error("Error parsing transcript:", e);
-          transcriptText = "Error displaying transcript";
+          return (
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-red-600">
+                <CheckCircleIcon className="h-3 w-3" />
+                Error Displaying Transcript
+              </div>
+              <div className="max-h-48 overflow-y-auto border border-red-200/30 dark:border-red-700/30 rounded p-2 bg-red-50/50 dark:bg-red-900/20 text-xs">
+                There was an error parsing the transcript data. Please try
+                again.
+              </div>
+            </div>
+          );
         }
-
-        return (
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-medium">
-              <CheckCircleIcon className="h-3 w-3" />
-              Transcript Retrieved
-              {isCached && (
-                <span className="ml-2 text-xs bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 px-1.5 py-0.5 rounded-full">
-                  From cache
-                </span>
-              )}
-            </div>
-            <div className="max-h-48 overflow-y-auto border border-amber-200/30 dark:border-amber-700/30 rounded p-2 bg-amber-50/50 dark:bg-amber-900/20 text-xs">
-              {transcriptText}
-            </div>
-          </div>
-        );
       }
 
       // Check for statistics or metrics

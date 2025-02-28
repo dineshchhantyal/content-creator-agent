@@ -16,7 +16,7 @@ export default defineSchema({
     transcript: v.array(
       v.object({
         text: v.string(),
-        timestamp: v.number(),
+        timestamp: v.string(),
       })
     ),
   })

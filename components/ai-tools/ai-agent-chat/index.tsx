@@ -45,6 +45,7 @@ const AiAgentChat = ({ videoId }: { videoId: string }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Suggestions based on common video analysis questions
   const suggestions = [
@@ -66,23 +67,26 @@ const AiAgentChat = ({ videoId }: { videoId: string }) => {
     }
   }, []);
 
+  // Update the scrollToBottom function to be more efficient
   const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      // Instead of scrollIntoView which can affect the whole page
-      const scrollArea = messagesEndRef.current.closest(
-        ".scroll-area-viewport"
-      );
-      if (scrollArea) {
-        scrollArea.scrollTop = scrollArea.scrollHeight;
-      } else {
-        // Fallback that's less likely to scroll the whole page
-        messagesEndRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-          inline: "nearest",
-        });
-      }
+    // Debounce the scroll operation
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
     }
+
+    scrollTimeoutRef.current = setTimeout(() => {
+      if (messagesEndRef.current) {
+        const scrollArea = messagesEndRef.current.closest(
+          ".scroll-area-viewport"
+        );
+        if (scrollArea) {
+          // Use requestAnimationFrame for smoother scrolling
+          requestAnimationFrame(() => {
+            scrollArea.scrollTop = scrollArea.scrollHeight;
+          });
+        }
+      }
+    }, 100);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
