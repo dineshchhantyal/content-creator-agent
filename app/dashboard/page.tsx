@@ -37,12 +37,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { useUserVideos } from "@/hooks/useUserVideos";
-import getYoutubeVideoIdFromUrl from "@/lib/getVideoFromUrl";
 import analyzeYoutubeVideo from "@/actions/analyzeYoutubeVideo";
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const { user, isSignedIn } = useUser();
+  const { user } = useUser();
   const { videos, isLoading, isEmpty } = useUserVideos();
   const [searchQuery, setSearchQuery] = useState("");
   const [videoUrl, setVideoUrl] = useState("");

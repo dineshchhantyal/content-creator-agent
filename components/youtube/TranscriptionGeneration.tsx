@@ -33,6 +33,15 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
   const [editedText, setEditedText] = useState("");
   const [copiedTimestamp, setCopiedTimestamp] = useState<string | null>(null);
 
+  console.log({
+    transcript,
+    isGenerating,
+    editMode,
+    editedText,
+    copiedTimestamp,
+    videoId,
+  });
+
   const { featureUsageExceeded } = useSchematicEntitlement(
     FeatureFlag.TRANSCRIPTION
   );

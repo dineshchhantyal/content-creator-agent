@@ -4,7 +4,7 @@ import getVideoDetails from "@/actions/getVideoDetails";
 import { YoutubeVideoDetails as YoutubeVideoDetailsType } from "@/types/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {

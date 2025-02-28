@@ -6,7 +6,7 @@ import Usage from "../metrics/Usage";
 import { FeatureFlag } from "../features/flags";
 import Image from "next/image";
 import { useImages } from "@/hooks/useImages";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -15,11 +15,7 @@ import { useSchematicEntitlement } from "@schematichq/schematic-react";
 const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
   const { user } = useUser();
   const [isGenerating, setIsGenerating] = useState(false);
-  const {
-    images = [],
-    uploadImage,
-    removeImage,
-  } = useImages(videoId, user?.id ?? "");
+  const { images = [], removeImage } = useImages(videoId, user?.id ?? "");
   const { featureUsageExceeded, featureAllocation } = useSchematicEntitlement(
     FeatureFlag.IMAGE_GENERATION
   );

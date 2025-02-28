@@ -17,6 +17,8 @@ const TitleGenerations = ({ videoId }: { videoId: string }) => {
   const { featureUsageExceeded, featureAllocation } = useSchematicEntitlement(
     FeatureFlag.TITLE_GENERATION
   );
+
+  console.log({ user, isGenerating, copiedId, videoId });
   // Example titles - in a real app, you'd fetch these from your API
   const titles: { id: string; text: string }[] = [];
 
