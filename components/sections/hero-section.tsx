@@ -9,15 +9,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Sparkles, Video } from "lucide-react";
 import { HeroAnimation } from "@/components/sections/hero-animation";
+import analyzeYoutubeVideo from "@/actions/analyzeYoutubeVideo";
 
 export function HeroSection() {
-  const router = useRouter();
   const [videoUrl, setVideoUrl] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (videoUrl) {
-      router.push(`/analyze?url=${encodeURIComponent(videoUrl)}`);
+    const formData = new FormData();
+    formData.append("url", videoUrl);
+
+    // Redirect to video analysis page
+    try {
+      analyzeYoutubeVideo(formData);
+    } catch (error) {
+      console.error(error);
     }
   };
 
