@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import YoutubeVideoDetails from "@/components/youtube/YoutubeVideoDetails";
 import { FeatureFlag } from "@/components/features/flags";
 import Usage from "@/components/metrics/Usage";
@@ -21,10 +21,34 @@ import AiAgentChat from "@/components/ai-tools/ai-agent-chat";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@clerk/nextjs";
+import { Doc } from "@/convex/_generated/dataModel";
+import createOrGetVideo from "@/actions/createOrGetVideo";
 
 const VideoAnalyzePage = () => {
   const params = useParams<{ videoId: string }>();
   const [chatExpanded, setChatExpanded] = useState(false);
+  const { user } = useUser();
+  const [video, setVideo] = useState<any>(undefined);
+
+  useEffect(() => {
+    if (user) {
+      if (!user.id) {
+        throw new Error("User not found");
+      }
+
+      const fetchVideo = async () => {
+        const response = await createOrGetVideo(params.videoId);
+        console.log({ response });
+        if (!response) {
+          throw new Error("Video not found");
+        }
+        setVideo(response);
+      };
+
+      fetchVideo();
+    }
+  }, [user, params]);
 
   const toggleChatExpansion = () => {
     setChatExpanded(!chatExpanded);
