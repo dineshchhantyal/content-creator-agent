@@ -9,8 +9,6 @@ const youtube = google.youtube({
 });
 
 const getVideoDetails = async (videoId: string) => {
-  console.log("videoId", videoId);
-
   try {
     const response = await youtube.videos.list({
       part: ["snippet", "statistics"],
@@ -26,8 +24,6 @@ const getVideoDetails = async (videoId: string) => {
       part: ["snippet", "statistics"],
       id: [videoDetails.snippet?.channelId || ""],
     });
-
-    console.log("channelResponse", channelResponse.data.items);
 
     const video: YoutubeVideoDetails = {
       title: videoDetails.snippet?.title || "Unknown",

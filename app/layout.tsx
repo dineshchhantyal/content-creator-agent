@@ -1,6 +1,7 @@
 import { type Metadata, type Viewport } from "next";
 import "./globals.css";
 import ClientWrapper from "@/components/ClientWrapper";
+import "katex/dist/katex.min.css"; // You'll need to install this package
 
 // Add a separate export for viewport configuration
 export const viewport: Viewport = {
