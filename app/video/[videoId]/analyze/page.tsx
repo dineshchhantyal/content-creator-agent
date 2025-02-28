@@ -41,7 +41,6 @@ const VideoAnalyzePage = () => {
               <ThumbnailGeneration videoId={params.videoId} />
               <TitleGenerations videoId={params.videoId} />
             </div>
-
             <TranscriptionGeneration videoId={params.videoId} />
           </div>
         </div>

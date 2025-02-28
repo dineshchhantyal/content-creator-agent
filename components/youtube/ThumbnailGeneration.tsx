@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSchematicEntitlement } from "@schematichq/schematic-react";
 
 const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
   const { user } = useUser();
@@ -19,6 +20,15 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
     uploadImage,
     removeImage,
   } = useImages(videoId, user?.id ?? "");
+  const { featureUsageExceeded, featureAllocation } = useSchematicEntitlement(
+    FeatureFlag.IMAGE_GENERATION
+  );
+
+  console.log("images", {
+    images,
+    featureUsageExceeded,
+    featureAllocation,
+  });
 
   const generateNewThumbnail = async () => {
     setIsGenerating(true);
@@ -37,14 +47,14 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
     >
       <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium flex justify-between items-center">
-            <span>Thumbnail Generation</span>
+          {(!featureUsageExceeded || featureAllocation === 0) && (
             <Usage
               featureFlag={FeatureFlag.IMAGE_GENERATION}
               title="Thumbnail Generation"
             />
-          </CardTitle>
+          )}
         </CardHeader>
+
         <CardContent className="pt-0">
           {images.length > 0 ? (
             <div className="space-y-4">

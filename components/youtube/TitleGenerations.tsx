@@ -8,12 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Copy, Loader2, Plus, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSchematicEntitlement } from "@schematichq/schematic-react";
 
 const TitleGenerations = ({ videoId }: { videoId: string }) => {
   const { user } = useUser();
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-
+  const { featureUsageExceeded, featureAllocation } = useSchematicEntitlement(
+    FeatureFlag.TITLE_GENERATION
+  );
   // Example titles - in a real app, you'd fetch these from your API
   const titles: { id: string; text: string }[] = [];
 
@@ -39,15 +42,16 @@ const TitleGenerations = ({ videoId }: { videoId: string }) => {
       transition={{ duration: 0.4, delay: 0.2 }}
     >
       <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium flex justify-between items-center">
-            <span>Title Generation</span>
-            <Usage
-              featureFlag={FeatureFlag.TITLE_GENERATION}
-              title="Title Generation"
-            />
-          </CardTitle>
-        </CardHeader>
+        {(!featureUsageExceeded || !featureAllocation) && (
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-medium flex justify-between items-center">
+              <Usage
+                featureFlag={FeatureFlag.TITLE_GENERATION}
+                title="Title Generation"
+              />
+            </CardTitle>
+          </CardHeader>
+        )}
         <CardContent className="pt-0">
           {titles.length > 0 ? (
             <div className="space-y-4">
