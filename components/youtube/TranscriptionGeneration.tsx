@@ -9,23 +9,22 @@ import { Copy, FileText, Loader2, Play, Plus, FileEdit } from "lucide-react";
 import { motion } from "framer-motion";
 import Usage from "../metrics/Usage";
 import { Textarea } from "../ui/textarea";
+import { toast } from "sonner";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-
-interface TranscriptionEntry {
-  id: string;
-  text: string;
-  timestamp: string;
-}
+import getYoutubeVideoTranscript, {
+  TranscriptEntry,
+} from "@/actions/getYoutubeVideoTranscript";
 
 const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
   const [transcript, setTranscript] = useState<{
-    transcript: TranscriptionEntry[];
+    transcript: TranscriptEntry[];
     fullText: string;
+    isFromCache?: boolean;
   } | null>(null);
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -33,63 +32,59 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
   const [editedText, setEditedText] = useState("");
   const [copiedTimestamp, setCopiedTimestamp] = useState<string | null>(null);
 
-  console.log({
-    transcript,
-    isGenerating,
-    editMode,
-    editedText,
-    copiedTimestamp,
-    videoId,
-  });
-
   const { featureUsageExceeded } = useSchematicEntitlement(
     FeatureFlag.TRANSCRIPTION
   );
 
   const generateTranscription = async () => {
+    if (!videoId) {
+      toast.error("Video ID is required to generate transcript");
+      return;
+    }
+
     setIsGenerating(true);
 
-    // Simulate AI generation with a timeout
-    setTimeout(() => {
-      // Example transcript data
-      const mockTranscript = [
-        {
-          id: "1",
-          timestamp: "0:00",
-          text: "Hello and welcome to my channel.",
-        },
-        {
-          id: "2",
-          timestamp: "0:05",
-          text: "Today we're going to discuss the latest trends in AI technology.",
-        },
-        {
-          id: "3",
-          timestamp: "0:12",
-          text: "Machine learning has made incredible progress in recent years.",
-        },
-        {
-          id: "4",
-          timestamp: "0:18",
-          text: "Let's dive into some of the most exciting developments.",
-        },
-      ];
+    try {
+      const result = await getYoutubeVideoTranscript(videoId);
 
-      const fullText = mockTranscript.map((entry) => entry.text).join(" ");
+      if (!result.transcript || result.transcript.length === 0) {
+        toast.error("No transcript found for this video");
+        setIsGenerating(false);
+        return;
+      }
+
+      // Generate full text from transcript segments
+      const fullText = result.transcript.map((entry) => entry.text).join(" ");
 
       setTranscript({
-        transcript: mockTranscript,
+        transcript: result.transcript,
         fullText: fullText,
+        isFromCache: result.cache ? true : false,
       });
 
       setEditedText(fullText);
+
+      // Display cache notice if applicable
+      if (result.cache) {
+        toast.info("Using cached transcript data", {
+          description: "This transcript was retrieved from our database",
+        });
+      }
+    } catch (error) {
+      console.error("Error generating transcript:", error);
+      toast.error("Failed to generate transcript", {
+        description:
+          "There was an error retrieving the transcript. Please try again.",
+      });
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   const copyToClipboard = (timestamp: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedTimestamp(timestamp);
+    toast.success("Copied to clipboard");
     setTimeout(() => setCopiedTimestamp(null), 2000);
   };
 
@@ -98,7 +93,7 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
       navigator.clipboard.writeText(
         editMode ? editedText : transcript.fullText
       );
-      // Show a success toast or feedback here
+      toast.success("Full transcript copied to clipboard");
     }
   };
 
@@ -116,6 +111,7 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
         fullText: editedText,
       });
       setEditMode(false);
+      toast.success("Transcript changes saved");
       // Here you would typically save to your backend
     }
   };
@@ -128,7 +124,14 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
     >
       <Card className="border border-gray-200 dark:border-gray-800 shadow-md bg-white dark:bg-gray-900/90 backdrop-blur-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium">Transcription</CardTitle>
+          <CardTitle className="text-lg font-medium flex items-center justify-between">
+            <span>Transcription</span>
+            {transcript?.isFromCache && (
+              <span className="text-xs bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 px-2 py-0.5 rounded-full">
+                From cache
+              </span>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
@@ -206,9 +209,9 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 text-sm">
-                  {transcript.transcript.map((entry) => (
+                  {transcript.transcript.map((entry, index) => (
                     <div
-                      key={entry.id}
+                      key={`entry-${index}`}
                       className="group flex justify-between items-start p-3 rounded-md border border-gray-200 dark:border-gray-800 hover:border-purple-300 dark:hover:border-purple-700 bg-gray-50 dark:bg-gray-800/30"
                     >
                       <div className="flex gap-3">
@@ -229,9 +232,13 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
                         onClick={() =>
                           copyToClipboard(entry.timestamp, entry.text)
                         }
-                        className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                        className={`transition-opacity h-6 w-6 p-0 ${
+                          copiedTimestamp === entry.timestamp
+                            ? "opacity-100 text-green-500"
+                            : "opacity-0 group-hover:opacity-100 text-gray-500"
+                        }`}
                       >
-                        <Copy className="h-3.5 w-3.5 text-gray-500" />
+                        <Copy className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   ))}
@@ -271,6 +278,18 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
                   </>
                 )}
               </Button>
+              {featureUsageExceeded && (
+                <p className="text-amber-600 dark:text-amber-400 text-sm">
+                  You've reached your transcription limit.
+                  <a
+                    href="/settings/plan"
+                    className="text-purple-600 dark:text-purple-400 ml-1 underline"
+                  >
+                    Upgrade your plan
+                  </a>{" "}
+                  to continue.
+                </p>
+              )}
             </div>
           )}
         </CardContent>
