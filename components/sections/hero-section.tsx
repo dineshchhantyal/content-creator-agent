@@ -9,8 +9,10 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, Sparkles, Video, Loader2 } from "lucide-react";
 import { HeroAnimation } from "@/components/sections/hero-animation";
 import analyzeYoutubeVideo from "@/actions/analyzeYoutubeVideo";
+import { useUser } from "@clerk/nextjs";
 
 export function HeroSection() {
+  const { user } = useUser();
   const [videoUrl, setVideoUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState("");
@@ -24,6 +26,9 @@ export function HeroSection() {
 
     const formData = new FormData();
     formData.append("url", videoUrl);
+    if (user?.id) {
+      formData.append("userId", user.id);
+    }
 
     try {
       await analyzeYoutubeVideo(formData);
