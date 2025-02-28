@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/lib/constants";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { siteConfig } from "@/lib/constants";
+import Link from "next/link";
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
@@ -14,9 +15,16 @@ export default function PricingPage() {
 
   // Calculate yearly savings percentages
   const savingsPercentage = (plan: (typeof siteConfig.pricingPlans)[0]) => {
+    if (plan.price.monthly === 0) return 0;
     const monthlyAnnual = plan.price.monthly * 12;
     const yearlyCost = plan.price.yearly;
     return Math.round(((monthlyAnnual - yearlyCost) / monthlyAnnual) * 100);
+  };
+
+  const handleEnterpriseClick = (email: string | undefined) => {
+    if (email) {
+      window.location.href = `mailto:${email}?subject=Enterprise Plan Inquiry&body=I'm interested in learning more about the Enterprise plan for CreatorAI.`;
+    }
   };
 
   return (
@@ -97,8 +105,8 @@ export default function PricingPage() {
           </motion.div>
         </div>
 
-        {/* Pricing cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        {/* Pricing cards - updated grid for 4 plans */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-7xl mx-auto">
           <TooltipProvider>
             {siteConfig.pricingPlans.map((plan, index) => (
               <motion.div
@@ -106,6 +114,8 @@ export default function PricingPage() {
                 className={`relative flex flex-col rounded-2xl border ${
                   plan.popular
                     ? "border-purple-200 dark:border-purple-900 shadow-xl shadow-purple-100 dark:shadow-none"
+                    : plan.name === "Free"
+                    ? "border-gray-200 dark:border-gray-800 border-dashed"
                     : "border-gray-200 dark:border-gray-800"
                 } bg-white dark:bg-gray-900 p-6 md:p-8`}
                 initial={{ opacity: 0, y: 30 }}
@@ -130,17 +140,20 @@ export default function PricingPage() {
                 <div className="mb-6">
                   <div className="flex items-baseline">
                     <span className="text-4xl font-extrabold">
-                      $
-                      {billingCycle === "monthly"
-                        ? plan.price.monthly
-                        : (plan.price.yearly / 12).toFixed(2)}
+                      {plan.price.monthly === 0 ? "Free" : "$"}
+                      {plan.price.monthly !== 0 &&
+                        (billingCycle === "monthly"
+                          ? plan.price.monthly
+                          : (plan.price.yearly / 12).toFixed(2))}
                     </span>
-                    <span className="ml-1 text-gray-500 dark:text-gray-400">
-                      /month
-                    </span>
+                    {plan.price.monthly !== 0 && (
+                      <span className="ml-1 text-gray-500 dark:text-gray-400">
+                        /month
+                      </span>
+                    )}
                   </div>
 
-                  {billingCycle === "yearly" && (
+                  {billingCycle === "yearly" && plan.price.monthly > 0 && (
                     <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                       <span className="font-medium text-green-600 dark:text-green-400">
                         ${plan.price.yearly}
@@ -166,9 +179,17 @@ export default function PricingPage() {
                   className={`w-full ${
                     plan.popular
                       ? "bg-gradient-to-r from-purple-600 to-fuchsia-500 hover:opacity-90"
+                      : plan.name === "Free"
+                      ? "bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white"
+                      : plan.name === "Enterprise"
+                      ? "bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
                       : "bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
                   }`}
                   size="lg"
+                  onClick={() =>
+                    plan.name === "Enterprise" &&
+                    handleEnterpriseClick(plan.contactEmail)
+                  }
                 >
                   {plan.cta}
                 </Button>
@@ -272,14 +293,16 @@ export default function PricingPage() {
               Join thousands of content creators who are already using CreatorAI
               to create better content, faster.
             </p>
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-fuchsia-500 hover:opacity-90 text-lg"
-            >
-              Start Your Free Trial
-            </Button>
+            <Link href="/sign-up">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 to-fuchsia-500 hover:opacity-90 text-lg"
+              >
+                Get Started Free
+              </Button>
+            </Link>
             <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              No credit card required. 14-day free trial.
+              No credit card required. Try the free plan today.
             </p>
           </div>
         </div>

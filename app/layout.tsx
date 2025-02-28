@@ -1,4 +1,4 @@
-import { type Metadata } from "next";
+import { type Metadata, type Viewport } from "next";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -14,6 +14,16 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Add a separate export for viewport configuration
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c0a09" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: {
@@ -62,17 +72,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icons/favicon.ico", sizes: "any" },
+      { url: "/favicon.ico", sizes: "any" }, // Simplified path
       { url: "/logo.svg", type: "image/svg+xml" },
     ],
-    apple: { url: "/icons/apple-touch-icon.png", sizes: "180x180" },
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" }, // Simplified path
     shortcut: "/favicon-16x16.png",
   },
   manifest: "/site.webmanifest",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-  },
   applicationName: "CreatorAI",
   appleWebApp: {
     capable: true,
@@ -82,10 +88,7 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c0a09" },
-  ],
+  // Remove viewport and themeColor from here
 };
 
 export default function ClientWrapper({

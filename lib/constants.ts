@@ -84,8 +84,27 @@ export const siteConfig = {
   // Pricing tiers
   pricingPlans: [
     {
+      name: "Free",
+      description:
+        "Perfect for getting started with AI-powered content creation.",
+      price: {
+        monthly: 0,
+        yearly: 0,
+      },
+      features: [
+        "3 Image Generations per month",
+        "Basic Script Generation",
+        "5 Title Generations per month",
+        "3 Transcriptions per month",
+        "5 Video Analysis per month",
+        "Community Support",
+      ],
+      cta: "Get Started Free",
+      popular: false,
+    },
+    {
       name: "Starter",
-      description: "The starter plan for content creators.",
+      description: "For creators who need more capabilities.",
       price: {
         monthly: 9.99,
         yearly: 99.99,
@@ -94,8 +113,9 @@ export const siteConfig = {
         "10 Image Generations per month",
         "Script Generation",
         "10 Title Generations per month",
-        "27 Transcriptions per month",
-        "46 Video Analysis per month",
+        "25 Transcriptions per month",
+        "45 Video Analysis per month",
+        "Email Support",
       ],
       cta: "Start Creating",
       popular: false,
@@ -114,6 +134,7 @@ export const siteConfig = {
         "100 Transcriptions per month",
         "Unlimited Video Analysis",
         "Priority Support",
+        "Access to Beta Features",
       ],
       cta: "Go Pro",
       popular: true,
@@ -137,6 +158,7 @@ export const siteConfig = {
       ],
       cta: "Contact Sales",
       popular: false,
+      contactEmail: "sales@creatorai.dineshchhantyal.com",
     },
   ],
 
@@ -201,4 +223,5 @@ export const paths = {
   pricing: "/pricing",
   signIn: "/sign-in",
   signUp: "/sign-up",
+  managePlan: "/manage-plan",
 };

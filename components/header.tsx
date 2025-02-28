@@ -201,6 +201,15 @@ export function Header() {
           </SignedOut>
 
           <SignedIn>
+            {/* link manage-plan */}
+            <Link href={paths.managePlan}>
+              <Button
+                size="sm"
+                className={`bg-gradient-to-r from-${siteConfig.colors.gradient.from} to-${siteConfig.colors.gradient.to} hover:opacity-90 text-white border-0`}
+              >
+                Manage Plan
+              </Button>
+            </Link>
             <UserButton afterSignOutUrl={paths.home} />
           </SignedIn>
 
