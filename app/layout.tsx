@@ -1,19 +1,6 @@
 import { type Metadata, type Viewport } from "next";
-
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
-import { AppWithProviders } from "@/components/app-with-providers";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import ClientWrapper from "@/components/ClientWrapper";
 
 // Add a separate export for viewport configuration
 export const viewport: Viewport = {
@@ -88,31 +75,12 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
-  // Remove viewport and themeColor from here
 };
 
-export default function ClientWrapper({
+export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const schematicPublishableKey =
-    process.env.NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY;
-
-  if (!schematicPublishableKey) {
-    throw new Error(
-      "Please provide your Schematic Publishable Key in the NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY environment variable."
-    );
-  }
-  return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 flex flex-col min-h-screen`}
-        >
-          <AppWithProviders>{children}</AppWithProviders>
-        </body>
-      </html>
-    </ClerkProvider>
-  );
+  return <ClientWrapper>{children}</ClientWrapper>;
 }

@@ -1,11 +1,8 @@
 import { type Metadata } from "next";
 
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { SchematicProvider } from "@schematichq/schematic-react";
-import SchematicWrapped from "./SchematicWrapped";
+
 import { AppWithProviders } from "./app-with-providers";
-import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,27 +24,13 @@ export default function ClientWrapper({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const schematicPublishableKey =
-    process.env.NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY;
-
-  if (!schematicPublishableKey) {
-    throw new Error(
-      "Please provide your Schematic Publishable Key in the NEXT_PUBLIC_SCHEMATIC_PUBLISHABLE_KEY environment variable."
-    );
-  }
   return (
-    <ClerkProvider>
-      <SchematicProvider publishableKey={schematicPublishableKey}>
-        <SchematicWrapped>
-          <html lang="en" suppressHydrationWarning>
-            <body
-              className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 flex flex-col min-h-screen`}
-            >
-              <AppWithProviders>{children}</AppWithProviders>
-            </body>
-          </html>
-        </SchematicWrapped>
-      </SchematicProvider>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 flex flex-col min-h-screen`}
+      >
+        <AppWithProviders>{children}</AppWithProviders>
+      </body>
+    </html>
   );
 }

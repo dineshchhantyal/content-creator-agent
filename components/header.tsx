@@ -202,7 +202,7 @@ export function Header() {
 
           <SignedIn>
             {/* link manage-plan */}
-            <Link href={paths.managePlan}>
+            <Link href={paths.managePlan} passHref>
               <Button
                 size="sm"
                 className={`bg-gradient-to-r from-${siteConfig.colors.gradient.from} to-${siteConfig.colors.gradient.to} hover:opacity-90 text-white border-0`}

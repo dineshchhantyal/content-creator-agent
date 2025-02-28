@@ -12,8 +12,6 @@ async function SchematicComponent({ componentId }: { componentId: string }) {
     return null;
   }
 
-  console.log("accessToken", accessToken);
-
   return <SchematicEmbed accessToken={accessToken} componentId={componentId} />;
 }
 
