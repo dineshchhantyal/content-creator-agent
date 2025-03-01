@@ -90,8 +90,8 @@ const VideoAnalyzePage = () => {
       <div className="container mx-auto px-4 py-20 text-center">
         <h2 className="text-2xl font-bold mb-4">Video not found</h2>
         <p className="mb-8 text-gray-600">
-          We couldn't find the video you're looking for. It might have been
-          removed or you don't have access to it.
+          We couldn&apos;t find the video you&apos;re looking for. It might have
+          been removed or you don&apos;t have access to it.
         </p>
         <Link
           href="/dashboard"
