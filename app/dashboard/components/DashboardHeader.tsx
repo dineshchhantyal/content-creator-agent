@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Video, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User } from "@clerk/nextjs/server";
 import { UserResource } from "@clerk/types";
 interface DashboardHeaderProps {
   user: UserResource | null | undefined;

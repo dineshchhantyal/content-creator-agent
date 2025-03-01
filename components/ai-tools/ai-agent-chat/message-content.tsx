@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { ExtendedChatMessage } from "./types";
+import { ExtendedChatMessage, MessagePart } from "./types";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
@@ -19,7 +19,7 @@ interface MessageContentProps {
 export const MessageContent = memo(function MessageContent({
   message,
 }: MessageContentProps) {
-  const renderPart = (part: any, idx: number) => {
+  const renderPart = (part: MessagePart, idx: number) => {
     switch (part.type) {
       case "text":
         return <TextPart key={`text-${idx}`} part={part} />;

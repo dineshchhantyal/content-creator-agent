@@ -1,15 +1,17 @@
+export interface ToolInvocation {
+  toolName?: string;
+  state?: string;
+  input?: Record<string, unknown>;
+  result?: Record<string, unknown>;
+}
+
 export interface MessagePart {
   type: string;
   text?: string;
   content?: string;
   reasoning?: string;
-  toolInvocation?: {
-    toolName?: string;
-    state?: string;
-    input?: any;
-    result?: any;
-  };
-  [key: string]: any;
+  toolInvocation?: ToolInvocation;
+  [key: string]: unknown;
 }
 
 export interface ChatMessage {
@@ -18,6 +20,7 @@ export interface ChatMessage {
   content: string;
   parts?: MessagePart[];
 }
+
 export interface ExtendedChatMessage extends ChatMessage {
   originalContent?: string;
   isTruncated?: boolean;

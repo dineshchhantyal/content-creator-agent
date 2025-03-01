@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import Usage from "../metrics/Usage";
 import { FeatureFlag } from "../features/flags";
 import { useImages } from "@/hooks/useImages";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Download,
@@ -23,7 +23,7 @@ import dalleImageGeneration from "@/actions/dalleImageGeneration";
 const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
   const { user } = useUser();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [prompt, setPrompt] = useState("");
+  const [prompt] = useState("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   const {
@@ -114,7 +114,7 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
           featureAllocation > 0 ? (
             <div className="text-center py-6">
               <p className="text-amber-600 dark:text-amber-400 mb-2">
-                You've reached your limit for image generation.
+                You&apos;ve reached your limit for image generation.
               </p>
               <Button
                 variant="outline"

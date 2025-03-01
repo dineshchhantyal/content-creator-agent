@@ -25,7 +25,6 @@ export function TextPart({ part }: MessagePartProps) {
 export function ToolInvocationPart({ part }: MessagePartProps) {
   // Extract tool result data
   const toolName = part.toolInvocation?.toolName || "Video Analysis";
-  // @ts-ignore
   const toolResult = part.toolInvocation?.result;
   const toolInput = part.toolInvocation?.state || "Processing...";
 
@@ -54,7 +53,7 @@ export function ToolInvocationPart({ part }: MessagePartProps) {
       ) {
         // Handle different transcript formats
         let isCached = false;
-        let transcriptData = null;
+        let transcriptData: TranscriptEntry[] | null = null;
 
         try {
           // Check for cache flag
@@ -64,7 +63,7 @@ export function ToolInvocationPart({ part }: MessagePartProps) {
 
           // Handle array format transcript (from getYoutubeVideoTranscript)
           if (Array.isArray(toolResult.transcript)) {
-            transcriptData = toolResult.transcript;
+            transcriptData = toolResult.transcript as TranscriptEntry[];
 
             return (
               <div className="space-y-2">
@@ -90,25 +89,26 @@ export function ToolInvocationPart({ part }: MessagePartProps) {
                       </tr>
                     </thead>
                     <tbody>
-                      {transcriptData.map(
-                        (entry: TranscriptEntry, idx: number) => (
-                          <tr
-                            key={`transcript-${idx}`}
-                            className={
-                              idx % 2 === 0
-                                ? "bg-amber-50/50 dark:bg-amber-900/10"
-                                : "bg-amber-100/20 dark:bg-amber-900/20"
-                            }
-                          >
-                            <td className="px-3 py-1.5 font-mono text-amber-800 dark:text-amber-300 border-b border-amber-100/30 dark:border-amber-800/30 whitespace-nowrap">
-                              {entry.timestamp}
-                            </td>
-                            <td className="px-3 py-1.5 text-amber-900 dark:text-amber-50 border-b border-amber-100/30 dark:border-amber-800/30">
-                              {entry.text}
-                            </td>
-                          </tr>
-                        )
-                      )}
+                      {transcriptData &&
+                        transcriptData.map(
+                          (entry: TranscriptEntry, idx: number) => (
+                            <tr
+                              key={`transcript-${idx}`}
+                              className={
+                                idx % 2 === 0
+                                  ? "bg-amber-50/50 dark:bg-amber-900/10"
+                                  : "bg-amber-100/20 dark:bg-amber-900/20"
+                              }
+                            >
+                              <td className="px-3 py-1.5 font-mono text-amber-800 dark:text-amber-300 border-b border-amber-100/30 dark:border-amber-800/30 whitespace-nowrap">
+                                {entry.timestamp}
+                              </td>
+                              <td className="px-3 py-1.5 text-amber-900 dark:text-amber-50 border-b border-amber-100/30 dark:border-amber-800/30">
+                                {entry.text}
+                              </td>
+                            </tr>
+                          )
+                        )}
                     </tbody>
                   </table>
                 </div>
@@ -126,7 +126,10 @@ export function ToolInvocationPart({ part }: MessagePartProps) {
             typeof toolResult.transcript === "object" &&
             toolResult.transcript
           ) {
-            if (typeof toolResult.transcript.text === "string") {
+            if (
+              "text" in toolResult.transcript &&
+              typeof toolResult.transcript.text === "string"
+            ) {
               transcriptText = toolResult.transcript.text;
             } else {
               transcriptText = JSON.stringify(toolResult.transcript, null, 2);
@@ -259,6 +262,7 @@ export function ToolInvocationPart({ part }: MessagePartProps) {
     try {
       return JSON.stringify(toolInput);
     } catch (e) {
+      console.error("Error rendering tool input:", e);
       return "Complex input";
     }
   };

@@ -10,7 +10,7 @@ import { LoadingIndicator } from "./loading-indicator";
 import { ChatInput } from "./chat-input";
 import { SuggestionsPanel } from "./suggestions-panel";
 import "katex/dist/katex.min.css";
-import { ChatMessage, MessagePart } from "./types";
+import { ChatMessage } from "./types";
 
 // LaTeX styling
 const latexStyles = `

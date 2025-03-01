@@ -24,29 +24,38 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import createOrGetVideo from "@/actions/createOrGetVideo";
 import { toast } from "sonner";
+import { Doc } from "@/convex/_generated/dataModel";
 
 const VideoAnalyzePage = () => {
   const params = useParams<{ videoId: string }>();
   const [chatExpanded, setChatExpanded] = useState(false);
   const { user } = useUser();
-  const [video, setVideo] = useState<any>(undefined);
+  const [video, setVideo] = useState<Doc<"videos"> | null>(null);
+  const [, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
       if (!user.id) {
-        throw new Error("User not found");
+        toast.error("User not found");
+        return;
       }
 
       const fetchVideo = async () => {
-        const response = await createOrGetVideo(params.videoId);
-        if (!response.success) {
-          toast(response.error ?? "Error fetching video");
+        setIsLoading(true);
+        try {
+          const response = await createOrGetVideo(params.videoId);
+          if (!response.success) {
+            toast.error(response.error ?? "Error fetching video");
+            return;
+          }
+
+          setVideo(response.data ?? null);
+        } catch (error) {
+          console.error("Error fetching video:", error);
+          toast.error("Failed to fetch video details");
+        } finally {
+          setIsLoading(false);
         }
-        console.log({ response });
-        if (!response) {
-          throw new Error("Video not found");
-        }
-        setVideo(response);
       };
 
       fetchVideo();
@@ -56,6 +65,10 @@ const VideoAnalyzePage = () => {
   const toggleChatExpansion = () => {
     setChatExpanded(!chatExpanded);
   };
+
+  if (!video) {
+    return null;
+  }
 
   return (
     <>
@@ -97,6 +110,12 @@ const VideoAnalyzePage = () => {
                 Get AI-powered insights and improvements for your YouTube
                 content
               </p>
+              {/* Display video title if available */}
+              {video?.videoId && (
+                <p className="text-sm font-medium mt-2 text-purple-600 dark:text-purple-400">
+                  Analyzing: {video.userId}
+                </p>
+              )}
             </div>
             <Button
               variant="outline"

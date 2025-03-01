@@ -280,7 +280,7 @@ const TranscriptionGeneration = ({ videoId }: { videoId: string }) => {
               </Button>
               {featureUsageExceeded && (
                 <p className="text-amber-600 dark:text-amber-400 text-sm">
-                  You've reached your transcription limit.
+                  You&apos;ve reached your transcription limit.
                   <a
                     href="/settings/plan"
                     className="text-purple-600 dark:text-purple-400 ml-1 underline"
