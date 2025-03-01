@@ -4,11 +4,17 @@ import { useUser } from "@clerk/nextjs";
 import React, { useState } from "react";
 import Usage from "../metrics/Usage";
 import { FeatureFlag } from "../features/flags";
-import Image from "next/image";
 import { useImages } from "@/hooks/useImages";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
+import {
+  Download,
+  Loader2,
+  Plus,
+  RefreshCw,
+  Trash2,
+  ImageIcon,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useSchematicEntitlement } from "@schematichq/schematic-react";
 import { toast } from "sonner";
@@ -18,11 +24,14 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
   const { user } = useUser();
   const [isGenerating, setIsGenerating] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
   const {
     images = [],
     removeImage,
     refreshImages,
   } = useImages(videoId, user?.id ?? "");
+
   const { featureUsageExceeded, featureAllocation } = useSchematicEntitlement(
     FeatureFlag.IMAGE_GENERATION
   );
@@ -79,6 +88,10 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
     }
   };
 
+  const handleImageError = (id: string) => {
+    setImageErrors((prev) => ({ ...prev, [id]: true }));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -115,16 +128,28 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {images.map((image) => (
                   <div key={image._id} className="relative group">
-                    {image.url && (
-                      <div className="relative aspect-video rounded-md overflow-hidden border border-gray-200 dark:border-gray-800">
-                        <Image
+                    <div className="relative aspect-video rounded-md overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800">
+                      {/* Check if the image URL exists and is valid */}
+                      {image.url &&
+                      image.url.trim() !== "" &&
+                      !imageErrors[image._id] ? (
+                        // Using img tag instead of Next.js Image to avoid URL validation issues
+                        <img
                           src={image.url}
                           alt={image.title || "Thumbnail"}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={() => handleImageError(image._id)}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                          <div className="flex gap-2">
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <ImageIcon className="h-10 w-10 text-gray-400" />
+                        </div>
+                      )}
+
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <div className="flex gap-2">
+                          {image.url && !imageErrors[image._id] && (
                             <Button
                               size="sm"
                               variant="secondary"
@@ -138,17 +163,17 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
                             >
                               <Download size={16} />
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => removeImage(image._id)}
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => removeImage(image._id)}
+                          >
+                            <Trash2 size={16} />
+                          </Button>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 ))}
               </div>

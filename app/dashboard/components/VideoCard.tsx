@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -24,12 +23,12 @@ interface VideoCardProps {
   index: number;
 }
 
+// No need to import the Image component from next/image
+// We'll use a regular img tag to avoid Next.js URL validation issues
+
 const VideoCard = ({ video, index }: VideoCardProps) => {
   const { videoId, titles, images, hasTranscript, _creationTime } = video;
-
-  // Safely handle potentially missing data
-  const mainImage =
-    images && images.length > 0 && images[0]?.url ? images[0].url : null;
+  const [imageError, setImageError] = useState(false);
 
   // Make sure videoId is never empty for constructing fallback URLs
   const safeVideoId = videoId || "default";
@@ -39,12 +38,25 @@ const VideoCard = ({ video, index }: VideoCardProps) => {
       ? titles[0].title
       : `YouTube Video (${safeVideoId})`;
 
-  // Handle the case where mainImage is null and ensure videoId is valid for YouTube thumbnail URL
-  const thumbnailUrl =
-    mainImage ||
-    (safeVideoId && safeVideoId !== "default"
+  // Only use images[0].url if it's not null, undefined, or empty string
+  const mainImage =
+    !imageError &&
+    images &&
+    images.length > 0 &&
+    images[0]?.url &&
+    images[0].url.trim() !== ""
+      ? images[0].url
+      : null;
+
+  // Create YouTube thumbnail URL only if we have a valid videoId
+  const youtubeThumbUrl =
+    safeVideoId && safeVideoId !== "default"
       ? `https://img.youtube.com/vi/${safeVideoId}/maxresdefault.jpg`
-      : "/placeholder-thumbnail.png"); // Provide a local fallback image
+      : null;
+
+  // Use local placeholder as ultimate fallback
+  const finalImageUrl =
+    mainImage || youtubeThumbUrl || "/placeholder-thumbnail.png";
 
   const createdAt = _creationTime
     ? formatDistanceToNow(new Date(_creationTime), { addSuffix: true })
@@ -57,21 +69,23 @@ const VideoCard = ({ video, index }: VideoCardProps) => {
       transition={{ duration: 0.4, delay: index * 0.1 }}
     >
       <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 group">
-        <div className="relative aspect-video overflow-hidden">
-          {/* Add error handling for image loading */}
-          <Image
-            src={thumbnailUrl}
+        <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
+          {/* Using regular img tag instead of Next.js Image component */}
+          <img
+            src={finalImageUrl}
             alt={mainTitle}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              // If image fails to load, replace with default placeholder
-              const target = e.target as HTMLImageElement;
-              target.onerror = null; // Prevent infinite loop
-              target.src = "/placeholder-thumbnail.png";
-            }}
-            unoptimized={thumbnailUrl.includes("youtube.com")} // Don't optimize external images
+            onError={() => setImageError(true)}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
           />
+          {/* Fallback icon shown only when image has an error */}
+          {imageError && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <ImageIcon className="h-12 w-12 text-gray-400" />
+            </div>
+          )}
+
+          {/* Overlay that appears on hover */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex items-end">
             <Link
               href={`/video/${safeVideoId}/analyze`}
