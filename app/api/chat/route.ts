@@ -5,6 +5,7 @@ import fetchTranscript from "@/components/tools/fetchTranscript";
 import { generateImage } from "@/components/tools/generateImage";
 import { currentUser } from "@clerk/nextjs/server";
 import { z } from "zod";
+import generateTitle from "@/components/tools/generateTitle";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -84,6 +85,7 @@ Focus on being helpful, specific, and providing actionable insights that will ge
       tools: {
         transcription: fetchTranscript,
         generatesImages: generateImage(videoId),
+        title: generateTitle,
         getVIdeoDetails: tool({
           description: "Get video details",
           parameters: z.object({

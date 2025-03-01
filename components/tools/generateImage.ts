@@ -4,27 +4,23 @@ import { z } from "zod";
 import { FeatureFlag } from "../features/flags";
 import dalleImageGeneration from "@/actions/dalleImageGeneration";
 
-export const generateImage = (userId: string) => ({
-  type: "function" as const,
-  function: {
-    name: "generate_image",
+const imageSchema = z.object({
+  videoId: z.string().describe("The video ID to generate a thumbnail for"),
+  prompt: z
+    .string()
+    .describe(
+      "The prompt to generate the thumbnail from (be descriptive and creative)"
+    ),
+});
+
+export const generateImage = (userId: string) =>
+  tool({
     description: "Generate an AI thumbnail image for a YouTube video",
-    parameters: z.object({
-      videoId: z.string().describe("The video ID to generate a thumbnail for"),
-      prompt: z
-        .string()
-        .describe(
-          "The prompt to generate the thumbnail from (be descriptive and creative)"
-        ),
-    }),
-    execute: async ({
-      videoId,
-      prompt,
-    }: {
-      videoId: string;
-      prompt: string;
-    }) => {
+    parameters: imageSchema,
+    execute: async (input: z.infer<typeof imageSchema>) => {
       try {
+        const { videoId, prompt } = input;
+
         // Create schematic context with userId
         const schematicContext = {
           company: {
@@ -51,10 +47,10 @@ export const generateImage = (userId: string) => ({
         // Generate the image using DALL-E
         const result = await dalleImageGeneration(videoId, prompt || "");
 
-        if (!result.success) {
+        if (!result?.success) {
           return {
             success: false,
-            error: result.error || "Failed to generate image",
+            error: result?.error || "Failed to generate image",
           };
         }
 
@@ -72,5 +68,4 @@ export const generateImage = (userId: string) => ({
         };
       }
     },
-  },
-});
+  });

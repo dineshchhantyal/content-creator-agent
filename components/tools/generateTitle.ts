@@ -1,3 +1,4 @@
+import titleGenerations from "@/actions/titleGenerations";
 import { tool } from "ai";
 import { z } from "zod";
 
@@ -16,7 +17,7 @@ const generateTitle = tool({
   }),
   execute: async ({
     videoId,
-    videSummary,
+    videoSummary,
     considerations,
   }: {
     videoId: string;
