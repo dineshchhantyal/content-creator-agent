@@ -6,7 +6,7 @@ import {
   Clock,
   FileText,
   Image as ImageIcon,
-  Text,
+  Text as TextIcon,
   ArrowRight,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -125,7 +125,7 @@ const VideoCard = ({ video, index }: VideoCardProps) => {
                   : ""
               }`}
             >
-              <Text size={12} className="mr-1" />
+              <TextIcon size={12} className="mr-1" />
               {titles && titles.length > 0
                 ? `${titles.length} Titles`
                 : "No Titles"}

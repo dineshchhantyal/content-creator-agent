@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Minimize2,
   Sparkles,
+  Loader2,
 } from "lucide-react";
 import UpcomingFeatures from "@/components/metrics/UpcomingFeatures";
 import AiAgentChat from "@/components/ai-tools/ai-agent-chat";
@@ -28,24 +29,27 @@ import { Doc } from "@/convex/_generated/dataModel";
 
 const VideoAnalyzePage = () => {
   const params = useParams<{ videoId: string }>();
+  const videoId = params?.videoId || "";
   const [chatExpanded, setChatExpanded] = useState(false);
   const { user } = useUser();
   const [video, setVideo] = useState<Doc<"videos"> | null>(null);
-  const [, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (user && videoId) {
       if (!user.id) {
         toast.error("User not found");
+        setIsLoading(false);
         return;
       }
 
       const fetchVideo = async () => {
         setIsLoading(true);
         try {
-          const response = await createOrGetVideo(params.videoId);
+          const response = await createOrGetVideo(videoId);
           if (!response.success) {
             toast.error(response.error ?? "Error fetching video");
+            setIsLoading(false);
             return;
           }
 
@@ -59,15 +63,44 @@ const VideoAnalyzePage = () => {
       };
 
       fetchVideo();
+    } else {
+      setIsLoading(false);
     }
-  }, [user, params]);
+  }, [user, videoId]);
 
   const toggleChatExpansion = () => {
     setChatExpanded(!chatExpanded);
   };
 
-  if (!video) {
-    return null;
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-purple-600" />
+          <p className="mt-2 text-sm text-gray-500">Loading video details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If we're not loading and there's no video, show an error message
+  if (!video && !isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <h2 className="text-2xl font-bold mb-4">Video not found</h2>
+        <p className="mb-8 text-gray-600">
+          We couldn't find the video you're looking for. It might have been
+          removed or you don't have access to it.
+        </p>
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+        >
+          <ArrowLeft size={14} className="mr-2" /> Back to Dashboard
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -110,10 +143,10 @@ const VideoAnalyzePage = () => {
                 Get AI-powered insights and improvements for your YouTube
                 content
               </p>
-              {/* Display video title if available */}
-              {video?.videoId && (
+              {/* Display video details if available */}
+              {video && (
                 <p className="text-sm font-medium mt-2 text-purple-600 dark:text-purple-400">
-                  Analyzing: {video.userId}
+                  Analyzing: {videoId}
                 </p>
               )}
             </div>
