@@ -127,13 +127,13 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {images.map((image) => (
-                  <div key={image._id} className="relative group">
+                  <div
+                    key={image._id || Math.random().toString()}
+                    className="relative group"
+                  >
                     <div className="relative aspect-video rounded-md overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800">
-                      {/* Check if the image URL exists and is valid */}
-                      {image.url &&
-                      image.url.trim() !== "" &&
-                      !imageErrors[image._id] ? (
-                        // Using img tag instead of Next.js Image to avoid URL validation issues
+                      {/* Only render img if URL is valid */}
+                      {image.url && image.url.trim() !== "" ? (
                         <img
                           src={image.url}
                           alt={image.title || "Thumbnail"}
@@ -147,6 +147,7 @@ const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
                         </div>
                       )}
 
+                      {/* Rest of your component... */}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <div className="flex gap-2">
                           {image.url && !imageErrors[image._id] && (

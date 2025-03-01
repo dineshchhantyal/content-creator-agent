@@ -169,7 +169,7 @@ const VideoAnalyzePage = () => {
           <div
             className={`space-y-6 ${
               chatExpanded ? "lg:col-span-1" : "lg:col-span-2"
-            } ${chatExpanded && "hidden sm:block"}`}
+            } ${chatExpanded ? "hidden sm:block" : ""}`}
           >
             {/* Analysis Section */}
             <div className="space-y-6">
@@ -177,9 +177,14 @@ const VideoAnalyzePage = () => {
                 featureFlag={FeatureFlag.ANALYZE_VIDEO}
                 title="Analysis Overview"
               />
-              <YoutubeVideoDetails videoId={params.videoId} />
+              {/* Ensure we're passing a valid videoId */}
+              {params && params.videoId ? (
+                <YoutubeVideoDetails videoId={params.videoId} />
+              ) : (
+                <div>No video ID provided</div>
+              )}
 
-              {!chatExpanded && (
+              {!chatExpanded && params && params.videoId && (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <ThumbnailGeneration videoId={params.videoId} />
@@ -192,7 +197,7 @@ const VideoAnalyzePage = () => {
           </div>
 
           {/* Mobile chat (hidden on desktop) */}
-          {chatExpanded && (
+          {chatExpanded && params && params.videoId && (
             <div className="block sm:hidden">
               <div className="bg-white dark:bg-gray-900/90 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-800 h-[800px]">
                 <AiAgentChat videoId={params.videoId} />
@@ -220,7 +225,11 @@ const VideoAnalyzePage = () => {
                   <Maximize2 className="h-3.5 w-3.5" />
                 )}
               </Button>
-              <AiAgentChat videoId={params.videoId} />
+              {params && params.videoId ? (
+                <AiAgentChat videoId={params.videoId} />
+              ) : (
+                <div className="p-4 text-center">No video ID provided</div>
+              )}
             </div>
           </div>
         </div>

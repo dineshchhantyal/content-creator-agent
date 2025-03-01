@@ -70,16 +70,15 @@ const VideoCard = ({ video, index }: VideoCardProps) => {
     >
       <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 group">
         <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-          {/* Using regular img tag instead of Next.js Image component */}
-          <img
-            src={finalImageUrl}
-            alt={mainTitle}
-            onError={() => setImageError(true)}
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-          />
-          {/* Fallback icon shown only when image has an error */}
-          {imageError && (
+          {mainImage && mainImage.trim() !== "" ? (
+            <img
+              src={finalImageUrl}
+              alt={mainTitle || "Video thumbnail"}
+              onError={() => setImageError(true)}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <ImageIcon className="h-12 w-12 text-gray-400" />
             </div>

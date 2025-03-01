@@ -34,6 +34,10 @@ interface ExtendedChatMessage extends ChatMessage {
 }
 
 const AiAgentChat = ({ videoId }: { videoId: string }) => {
+  // Ensure videoId is always a valid string
+  const safeVideoId =
+    videoId && videoId.trim() !== "" ? videoId : "default-video";
+
   // Process messages to optimize performance
   const processMessages = useCallback(
     (rawMessages: ChatMessage[]): ExtendedChatMessage[] => {
@@ -68,9 +72,9 @@ const AiAgentChat = ({ videoId }: { videoId: string }) => {
   } = useChat({
     maxSteps: 5,
     body: {
-      videoId,
+      videoId: safeVideoId,
     },
-    id: `video-chat-${videoId}`,
+    id: `video-chat-${safeVideoId}`,
     initialMessages: [
       {
         id: "welcome",
