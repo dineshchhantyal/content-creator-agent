@@ -1,13 +1,31 @@
-import { streamText } from "ai";
+import { streamText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import getVideoDetails from "@/actions/getVideoDetails";
 import fetchTranscript from "@/components/tools/fetchTranscript";
+import { generateImage } from "@/components/tools/generateImage";
+import { currentUser } from "@clerk/nextjs/server";
+import { z } from "zod";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const { messages, videoId } = await req.json();
+  const user = await currentUser();
+
+  if (!user) {
+    return new Response(
+      JSON.stringify({
+        error: "User not found",
+      }),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
 
   try {
     // Get video details to personalize the AI experience
@@ -65,6 +83,16 @@ Focus on being helpful, specific, and providing actionable insights that will ge
       messages: augmentedMessages,
       tools: {
         transcription: fetchTranscript,
+        generatesImages: generateImage(videoId),
+        getVIdeoDetails: tool({
+          description: "Get video details",
+          parameters: z.object({
+            videoId: z.string().describe("The video ID to fetch details for"),
+          }),
+          execute: async ({ videoId }) => {
+            return { videoDetails: getVideoDetails(videoId) };
+          },
+        }),
       },
     });
 

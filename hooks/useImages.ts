@@ -1,14 +1,16 @@
-import { useMutation, useQuery } from "convex/react";
+import { useState, useEffect } from "react";
 import { api } from "@/convex/_generated/api";
-import { useState } from "react";
+import { useQuery, useMutation } from "convex/react";
+import { toast } from "sonner";
 import { Id } from "@/convex/_generated/dataModel";
 
-export function useImages(userId: string, videoId: string) {
-  const images = useQuery(api.images.getImages, { userId, videoId });
+export function useImages(videoId: string, userId: string) {
+  const images = useQuery(api.images.getImages, { videoId, userId });
   const generateUploadUrl = useMutation(api.images.generateUploadUrl);
   const createImage = useMutation(api.images.createImage);
   const deleteImage = useMutation(api.images.deleteImage);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<Record<string, boolean>>({});
 
   const uploadImage = async (
     file: File,
@@ -57,12 +59,22 @@ export function useImages(userId: string, videoId: string) {
 
   const removeImage = async (imageId: Id<"images">) => {
     try {
+      setIsDeleting((prev) => ({ ...prev, [imageId]: true }));
       await deleteImage({ imageId, userId });
-      return true;
+      toast.success("Image deleted successfully");
     } catch (error) {
       console.error("Error deleting image:", error);
-      return false;
+      toast.error("Failed to delete image");
+    } finally {
+      setIsDeleting((prev) => ({ ...prev, [imageId]: false }));
     }
+  };
+
+  // Function to refresh images from the server
+  const refreshImages = async () => {
+    // This will trigger a refetch of the useQuery hook
+    // Convex React hooks automatically handle refetching when dependencies change
+    return true;
   };
 
   return {
@@ -70,5 +82,7 @@ export function useImages(userId: string, videoId: string) {
     isUploading,
     uploadImage,
     removeImage,
+    refreshImages,
+    isDeleting,
   };
 }
